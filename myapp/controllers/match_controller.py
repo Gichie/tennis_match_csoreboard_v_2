@@ -34,9 +34,9 @@ class MatchController:
 
             # Получаем или создаем игроков
             # Используем сервисы
-            player1 = PlayerService.get_or_create(db, player1_name)
-            player2 = PlayerService.get_or_create(db, player2_name)
-            new_match = MatchService.create_match(db, player1, player2)
+            player1_id = PlayerService.get_player_id(db, player1_name)
+            player2_id = PlayerService.get_player_id(db, player2_name)
+            new_match = MatchService.create_match(db, player1_id, player2_id)
 
             db.add(new_match)
             db.commit()
@@ -108,26 +108,22 @@ class MatchController:
 
         try:
             # Принудительно загружаем Score из БД
-            score_data = json.loads(match.score) if match.score else {"sets": []}
+            score = json.loads(match.score) if match.score else {"sets": 0, "games": 0, "points": 0}
         except json.JSONDecodeError:
-            score_data = {"sets": []}
+            score = {"sets": 0, "games": 0, "points": 0}
 
         context = {
-            "match": {
-                "UUID": match.uuid,
-                "Score": match.score,
-                "Player1": match.player1_id,
-                "Player2": match.player2_id,
-                "Winner": match.winner_id
-            },
+            "uuid": match.uuid,
             "player1": player1_name,
             "player2": player2_name,
-            "score": MatchService.get_score_data(match),  # Используем MatchService
+            "player1_points": score["player1"]["points"],
+            "player1_games": score["player1"]["games"],
+            "player1_sets": score["player1"]["sets"],
+            "player2_points": score["player2"]["points"],
+            "player2_games": score["player2"]["games"],
+            "player2_sets": score["player2"]["sets"],
             "finished": False
         }
-
-        if not isinstance(context["score"], dict):
-            context["score"] = {"sets": []}
 
         response_body = self.view.render_match_score(context)
         headers = [('Content-Type', 'text/html; charset=utf-8')]

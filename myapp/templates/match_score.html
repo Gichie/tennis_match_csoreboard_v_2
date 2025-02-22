@@ -2,19 +2,18 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Счёт матча {{ match.uuid|default('Неизвестный матч') }}</title>
+    <title>Счёт матча {{ uuid|default('Неизвестный матч') }}</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
     <div class="container">
         <h1>
-            Матч между
-            {{ player1|default('Игрок 1') }} и
+            Match between
+            {{ player1|default('Игрок 1') }} and
             {{ player2|default('Игрок 2') }}
         </h1>
-
         <div class="scoreboard">
-            <h2>Текущий счёт:</h2>
+            <h2>Current score:</h2>
             {% if not finished %}
             <form method="POST">
             {% endif %}
@@ -22,18 +21,24 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Игрок</th>
-                                <th>Счёт</th>
+                                <th>Player</th>
+                                <th>Sets</th>
+                                <th>Games</th>
+                                <th>Points</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{{ player1|default('Игрок 1') }}</td>
-                                <td>{{ score.player1|default(0) }}</td>
+                                <td>{{ player1|default('Player 1') }}</td>
+                                <td>{{ player1_sets|default(666) }}</td>
+                                <td>{{ player1_games|default(666) }}</td>
+                                <td>{{ player1_points|default(666) }}</td>
                             </tr>
                             <tr>
-                                <td>{{ player2|default('Игрок 2') }}</td>
-                                <td>{{ score.player2|default(0) }}</td>
+                                <td>{{ player2|default('Player 2') }}</td>
+                                <td>{{ player2_sets|default(666) }}</td>
+                                <td>{{ player2_games|default(666) }}</td>
+                                <td>{{ player2_points|default(666) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -48,8 +53,6 @@
                     </div>
                     {% endif %}
                 </div>
-                <!-- JSON-представление для отладки -->
-                <pre>{{ score|default({})|tojson(indent=2) }}</pre>
             {% if not finished %}
             </form>
             {% endif %}

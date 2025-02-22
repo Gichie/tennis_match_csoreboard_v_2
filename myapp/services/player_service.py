@@ -10,19 +10,23 @@ logger = logging.getLogger(__name__)
 
 class PlayerService:
     @staticmethod
-    def get_or_create(db: Session, name: str) -> Player:
+    def create_player(name: str) -> Player:
+        player = Player(name=name.strip())
+        return player
+
+    @staticmethod
+    def get_player_id(db: Session, name: str) -> int:
         try:
             # Проверяем валидность имени
             if not name or not isinstance(name, str):
                 raise ValueError("Invalid player name")
-
             player = db.query(Player).filter(Player.name.ilike(name)).first()
             if not player:
-                player = Player(name=name.strip())
+                player = PlayerService.create_player(name)
                 db.add(player)
                 db.commit()
                 db.refresh(player)
-            return player
+            return player.id
 
         except SQLAlchemyError as e:
             db.rollback()

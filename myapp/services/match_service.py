@@ -1,5 +1,6 @@
 import json
 import uuid
+from typing import Dict
 
 from sqlalchemy.orm import Session
 
@@ -9,12 +10,28 @@ from myapp.models.player import Player
 
 class MatchService:
     @staticmethod
-    def create_match(db: Session, player1: Player, player2: Player) -> Match:
+    def get_initial_score() -> Dict:
+        """Возвращает начальную структуру счёта"""
+        return {
+            "player1": {
+                "sets": 0,
+                "games": 0,
+                "points": 0
+            },
+            "player2": {
+                "sets": 0,
+                "games": 0,
+                "points": 0
+            }
+        }
+
+    @staticmethod
+    def create_match(db: Session, player1_id: int, player2_id: int) -> Match:
         new_match = Match(
             uuid=str(uuid.uuid4()),
-            score=json.dumps({"sets": [], "current_game": [0, 0]}),
-            player1_id=player1.id,
-            player2_id=player2.id
+            score=json.dumps(MatchService.get_initial_score()),
+            player1_id=player1_id,
+            player2_id=player2_id
         )
         db.add(new_match)
         db.commit()
@@ -23,25 +40,29 @@ class MatchService:
 
     @staticmethod
     def add_point(db: Session, match: Match, player_num: int) -> None:
-        """Добавление очка игроку с полной логикой подсчета"""
         score = json.loads(match.score)
 
-        # Обновляем текущий гейм
-        score["current_game"][player_num - 1] += 1
-        p1_score, p2_score = score["current_game"]
+        # Обновляем очки
+        player_key = f"player{player_num}"
+        score[player_key]["points"] += 1
 
-        # Проверка на выигрыш гейма
-        if (p1_score >= 4 or p2_score >= 4) and abs(p1_score - p2_score) >= 2:
-            score["sets"].append(score["current_game"].copy())
-            score["current_game"] = [0, 0]
+        # Логика перевода очков в геймы
+        if score[player_key]["points"] >= 4:
+            score[player_key]["games"] += 1
+            score[player_key]["points"] = 0
 
-            # Проверка на выигрыш матча
-            if len(score["sets"]) >= 3:
-                score["winner"] = player_num
+            # Сброс очков у другого игрока
+            other_player = "player2" if player_num == 1 else "player1"
+            score[other_player]["points"] = 0
+
+        # Логика перевода геймов в сеты
+        if score[player_key]["games"] >= 6:
+            score[player_key]["sets"] += 1
+            score[player_key]["games"] = 0
+            score[other_player]["games"] = 0
 
         match.score = json.dumps(score)
         db.commit()
-        db.refresh(match)
 
     @staticmethod
     def is_match_finished(match: Match) -> bool:
@@ -59,9 +80,9 @@ class MatchService:
     def get_score_data(match: Match) -> dict:
         """Десериализация счёта из JSON-строки"""
         try:
-            return json.loads(match.score) if match.score else {"sets": []}
+            return json.loads(match.score) if match.score else {"sets": 0, "games": 0, "points": 0}
         except (TypeError, json.JSONDecodeError):
-            return {"sets": []}
+            return {"sets": 0, "games": 0, "points": 0}
 
     @staticmethod
     def set_score_data(match: Match, value: dict) -> None:

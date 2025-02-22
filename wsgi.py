@@ -13,6 +13,7 @@ def application(environ, start_response):
     path = environ.get('PATH_INFO', '')
     method = environ.get('REQUEST_METHOD', 'GET')
 
+
     if path == '/index' or path == '/':  # Главная страница
         controller = HomeController()
         return controller.index(environ, start_response)
