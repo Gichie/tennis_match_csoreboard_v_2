@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from myapp.database.session import get_db
-from myapp.models.models import Player
+from myapp.models.player import Player
 
 
 class PlayerController:
@@ -15,4 +15,4 @@ class PlayerController:
 
     def get_player_by_name(self, name: str):
         db: Session = next(get_db())
-        return db.query(Player).filter(Player.Name == name).first()
+        return db.query(Player).filter(Player.name == name).first()
