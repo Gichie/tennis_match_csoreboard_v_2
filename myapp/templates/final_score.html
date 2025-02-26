@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Матч завершён | {{ player1 }} vs {{ player2 }}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="final-score">
+            <h1>Матч завершён! 🏆</h1>
+            <p class="winner-info">
+                Победитель: <strong>{{ winner }}</strong>
+            </p>
+            <div class="score-summary">
+                <h2>Итоговый счёт:</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Игрок</th>
+                            <th>Сеты</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ player1 }}</td>
+                            <td>{{ player1_sets }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ player2 }}</td>
+                            <td>{{ player2_sets }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="navigation">
+                <a href="/matches" class="btn">Список завершённых матчей</a>
+                <a href="/" class="btn">На главную</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,8 +1,6 @@
 import json
 from urllib.parse import parse_qs
 
-from sqlalchemy.orm import Session
-
 from myapp.database.session import get_db
 from myapp.services.match_service import MatchService
 from myapp.services.player_service import PlayerService
@@ -22,7 +20,6 @@ class MatchController:
     def create_match(self, environ, start_response):
         try:
             content_length = int(environ.get('CONTENT_LENGTH', 0))
-            # Читаем сырые байты из входного потока и декодируем байты в строку (UTF-8)
             post_data_bytes = environ['wsgi.input'].read(content_length).decode('utf-8')
             # Парсим параметры с учетом URL-кодирования
             params = parse_qs(post_data_bytes)
@@ -30,25 +27,22 @@ class MatchController:
             player1_name = params.get('player1', [''])[0]
             player2_name = params.get('player2', [''])[0]
 
-            db: Session = next(get_db())
+            with get_db() as db:
+                player1_id = PlayerService.get_player_id(db, player1_name)
+                player2_id = PlayerService.get_player_id(db, player2_name)
+                new_match = MatchService.create_match(db, player1_id, player2_id)
 
-            # Получаем или создаем игроков
-            # Используем сервисы
-            player1_id = PlayerService.get_player_id(db, player1_name)
-            player2_id = PlayerService.get_player_id(db, player2_name)
-            new_match = MatchService.create_match(db, player1_id, player2_id)
+                db.add(new_match)
+                db.commit()
+                db.refresh(new_match)
 
-            db.add(new_match)
-            db.commit()
-            db.refresh(new_match)
-
-            # Редирект на страницу матча
-            headers = [
-                ('Location', f'/match-score?uuid={new_match.uuid}'),
-                ('Content-Type', 'text/plain')
-            ]
-            start_response('302 Found', headers)
-            return [b'Redirecting...']
+                # Редирект на страницу матча
+                headers = [
+                    ('Location', f'/match-score?uuid={new_match.uuid}'),
+                    ('Content-Type', 'text/plain')
+                ]
+                start_response('302 Found', headers)
+                return [b'Redirecting...']
         except Exception as e:
             # Обработка ошибок
             start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
@@ -59,16 +53,16 @@ class MatchController:
         query = parse_qs(environ.get('QUERY_STRING', ''))
         match_uuid = query.get('uuid', [''])[0]
 
-        db: Session = next(get_db())
-        match = MatchService.get_match_by_uuid(db, match_uuid)  # Используем MatchService
+        with get_db() as db:
+            match = MatchService.get_match_by_uuid(db, match_uuid)  # Используем MatchService
 
-        if not match:
-            return self._not_found(start_response)
+            if not match:
+                return self._not_found(start_response)
 
-        if environ['REQUEST_METHOD'] == 'POST':
-            return self._handle_score_update(environ, start_response, match, db)
+            if environ['REQUEST_METHOD'] == 'POST':
+                return self._handle_score_update(environ, start_response, match, db)
 
-        return self._render_score_page(start_response, match)
+            return self._render_score_page(start_response, match)
 
     def _handle_score_update(self, environ, start_response, match, db):
         try:
@@ -86,15 +80,12 @@ class MatchController:
                 return self._bad_request(start_response)
 
             # Обновляем счёт
-            MatchService.add_point(db, match, player_num)  # Используем MatchService
+            MatchService.add_point(db, match, player_num)
 
             # Проверяем завершение матча
-            if MatchService.is_match_finished(match):  # Используем MatchService
-                match.winner_id = player_num
-                db.commit()
+            if MatchService.is_match_finished(match):
                 return self._render_final_score(start_response, match)
 
-            db.commit()
             return self._render_score_page(start_response, match)
 
         except Exception as e:
@@ -102,50 +93,44 @@ class MatchController:
             return [b'Error processing request']
 
     def _render_score_page(self, start_response, match):
-        db: Session = next(get_db())
-        player1_name = PlayerService.get_name(db, match.player1_id)  # Используем MatchService
-        player2_name = PlayerService.get_name(db, match.player2_id)  # Используем MatchService
+        with get_db() as db:
+            try:
+                score = json.loads(match.score) if match.score else {"sets": 0, "games": 0, "points": 0}
+            except json.JSONDecodeError:
+                score = {"sets": 0, "games": 0, "points": 0}
 
-        try:
-            # Принудительно загружаем Score из БД
-            score = json.loads(match.score) if match.score else {"sets": 0, "games": 0, "points": 0}
-        except json.JSONDecodeError:
-            score = {"sets": 0, "games": 0, "points": 0}
+            context = {
+                "uuid": match.uuid,
+                "player1": PlayerService.get_name(db, match.player1_id),
+                "player2": PlayerService.get_name(db, match.player2_id),
+                "player1_points": score["player1"]["points"],
+                "player1_games": score["player1"]["games"],
+                "player1_sets": score["player1"]["sets"],
+                "player2_points": score["player2"]["points"],
+                "player2_games": score["player2"]["games"],
+                "player2_sets": score["player2"]["sets"],
+                "finished": False,
+                "current_game_state": match.current_game_state
+            }
 
-        context = {
-            "uuid": match.uuid,
-            "player1": player1_name,
-            "player2": player2_name,
-            "player1_points": score["player1"]["points"],
-            "player1_games": score["player1"]["games"],
-            "player1_sets": score["player1"]["sets"],
-            "player2_points": score["player2"]["points"],
-            "player2_games": score["player2"]["games"],
-            "player2_sets": score["player2"]["sets"],
-            "finished": False
-        }
-
-        response_body = self.view.render_match_score(context)
-        headers = [('Content-Type', 'text/html; charset=utf-8')]
-        start_response('200 OK', headers)
-        return [response_body.encode('utf-8')]  # Обязательное кодирование
+            response_body = self.view.render_match_score(context)
+            headers = [('Content-Type', 'text/html; charset=utf-8')]
+            start_response('200 OK', headers)
+            return [response_body.encode('utf-8')]  # Обязательное кодирование
 
     def _render_final_score(self, start_response, match):
-        db: Session = next(get_db())
-        winner_name = PlayerService.get_name(db, match.winner_id)
-
-        context = {
-            "match": match,
-            "player1": PlayerService.get_name(db, match.player1_id),
-            "player2": PlayerService.get_name(db, match.player2_id),
-            "winner": winner_name,
-            "finished": True
-        }
-
-        response_body = self.view.render_match_score(context)
-        headers = [('Content-Type', 'text/html; charset=utf-8')]
-        start_response('200 OK', headers)
-        return [response_body.encode('utf-8')]
+        with get_db() as db:
+            context = {
+                "player1": PlayerService.get_name(db, match.player1_id),
+                "player2": PlayerService.get_name(db, match.player2_id),
+                "winner": PlayerService.get_name(db, match.winner_id),
+                "player1_sets": json.loads(match.score)["player1"]["sets"],
+                "player2_sets": json.loads(match.score)["player2"]["sets"],
+            }
+            response_body = self.view.render_final_score(context)
+            headers = [('Content-Type', 'text/html; charset=utf-8')]
+            start_response('200 OK', headers)
+            return [response_body.encode('utf-8')]
 
     def _not_found(self, start_response):
         start_response('404 Not Found', [('Content-Type', 'text/plain')])

@@ -82,6 +82,7 @@ input[type="text"] {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    text-decoration: none
 }
 
 .btn:hover {
@@ -113,13 +114,6 @@ input[type="text"] {
     opacity: 0.9;
 }
 
-.final-score {
-    text-align: center;
-    padding: 2rem;
-    border: 2px solid #007bff;
-    border-radius: 8px;
-}
-
 .scoreboard-content {
     display: flex;
     align-items: center;
@@ -143,4 +137,39 @@ th {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.final-score {
+    text-align: center;
+    padding: 2rem;
+    border: 2px solid #4CAF50;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    margin: 2rem auto;
+    max-width: 600px;
+}
+
+.winner-info {
+    font-size: 1.5rem;
+    color: #28a745;
+    margin: 1rem 0;
+}
+
+.score-summary table {
+    margin: 1rem auto;
+    border-collapse: collapse;
+    width: 50%; /* Уменьшаем ширину таблицы */
+}
+
+.navigation {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.score-summary th,
+.score-summary td {
+    padding: 10px;
+    text-align: center;
 }

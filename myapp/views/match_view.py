@@ -1,5 +1,6 @@
-from jinja2 import Environment, FileSystemLoader
 import os
+
+from jinja2 import Environment, FileSystemLoader
 
 
 class MatchView:
@@ -14,6 +15,9 @@ class MatchView:
             loader=loader,
             autoescape=True  # Включаем автоэкранирование
         )
+        self.env.filters['tennis_points'] = lambda x: {0: '0', 1: '15', 2: '30', 3: '40'}.get(x, '40')
+        self.env.filters['tie_break_points'] = lambda x: {0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6',
+                                                          7: '7'}.get(x, f'{x}')
 
     def render_new_match_form(self):
         template = self.env.get_template('new_match.html')
@@ -22,3 +26,7 @@ class MatchView:
     def render_match_score(self, context):
         template = self.env.get_template('match_score.html')
         return template.render(**context)  # Явное кодирование
+
+    def render_final_score(self, context):
+        template = self.env.get_template('final_score.html')
+        return template.render(**context)

@@ -15,7 +15,7 @@
         <div class="scoreboard">
             <h2>Current score:</h2>
             {% if not finished %}
-            <form method="POST">
+            <form method="POST" enctype="application/x-www-form-urlencoded">
             {% endif %}
                 <div class="scoreboard-content">
                     <table>
@@ -32,22 +32,38 @@
                                 <td>{{ player1|default('Player 1') }}</td>
                                 <td>{{ player1_sets|default(666) }}</td>
                                 <td>{{ player1_games|default(666) }}</td>
-                                <td>{{ player1_points|default(666) }}</td>
+                                <td>
+                                    {% if current_game_state == 'advantage_1' %}
+                                        A
+                                    {% elif current_game_state == 'tie_break'%}
+                                        {{ player1_points|default(666)|tie_break_points }}
+                                    {% else %}
+                                        {{ player1_points|default(666)|tennis_points }}
+                                    {% endif %}
+                                </td>
                             </tr>
                             <tr>
                                 <td>{{ player2|default('Player 2') }}</td>
                                 <td>{{ player2_sets|default(666) }}</td>
                                 <td>{{ player2_games|default(666) }}</td>
-                                <td>{{ player2_points|default(666) }}</td>
+                                <td>
+                                    {% if current_game_state == 'advantage_2' %}
+                                        A
+                                    {% elif current_game_state == 'tie_break'%}
+                                        {{ player2_points|default(666)|tie_break_points }}
+                                    {% else %}
+                                        {{ player2_points|default(666)|tennis_points }}
+                                    {% endif %}
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                     {% if not finished %}
                     <div class="score-buttons">
-                        <button type="submit" name="player1_point" class="btn player1">
+                        <button type="submit" name="player1_point" value="1" class="btn player1">
                             {{ player1|default('Игрок 1') }} выиграл очко
                         </button>
-                        <button type="submit" name="player2_point" class="btn player2">
+                        <button type="submit" name="player2_point" value="1" class="btn player2">
                             {{ player2|default('Игрок 2') }} выиграл очко
                         </button>
                     </div>

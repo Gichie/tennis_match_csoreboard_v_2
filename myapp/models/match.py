@@ -14,6 +14,7 @@ class Match(Base):
     player2_id = Column(Integer, ForeignKey('players.id'), nullable=False)
     winner_id = Column(Integer, ForeignKey('players.id'), nullable=True)
     score = Column(String(1000), nullable=False)
+    current_game_state = Column(String(26), default='regular')
 
     player1 = relationship("Player", foreign_keys=[player1_id], back_populates="matches_as_player1")
     player2 = relationship("Player", foreign_keys=[player2_id], back_populates="matches_as_player2")

@@ -5,7 +5,8 @@ from typing import Dict
 from sqlalchemy.orm import Session
 
 from myapp.models.match import Match
-from myapp.models.player import Player
+
+MIN_GAMES = 4
 
 
 class MatchService:
@@ -13,16 +14,8 @@ class MatchService:
     def get_initial_score() -> Dict:
         """Возвращает начальную структуру счёта"""
         return {
-            "player1": {
-                "sets": 0,
-                "games": 0,
-                "points": 0
-            },
-            "player2": {
-                "sets": 0,
-                "games": 0,
-                "points": 0
-            }
+            "player1": {"sets": 0, "games": 0, "points": 0},
+            "player2": {"sets": 0, "games": 0, "points": 0}
         }
 
     @staticmethod
@@ -41,53 +34,80 @@ class MatchService:
     @staticmethod
     def add_point(db: Session, match: Match, player_num: int) -> None:
         score = json.loads(match.score)
-
-        # Обновляем очки
         player_key = f"player{player_num}"
-        score[player_key]["points"] += 1
+        opponent_key = "player2" if player_num == 1 else "player1"
 
-        # Логика перевода очков в геймы
-        if score[player_key]["points"] >= 4:
-            score[player_key]["games"] += 1
-            score[player_key]["points"] = 0
+        if match.current_game_state == "regular":
+            score[player_key]["points"] += 1
+            if score[player_key]["points"] > 3 and score[player_key]["points"] - score[opponent_key]["points"] > 1:
+                MatchService._reset_game(score, player_key)
+            elif score[player_key]["points"] == 3 and score[opponent_key]["points"] == 3:
+                match.current_game_state = 'deuce'
 
-            # Сброс очков у другого игрока
-            other_player = "player2" if player_num == 1 else "player1"
-            score[other_player]["points"] = 0
+        elif match.current_game_state == 'deuce':
+            score[player_key]["points"] += 1
+            if score[player_key]["points"] != score[opponent_key]["points"]:
+                match.current_game_state = f'advantage_{player_num}'
 
-        # Логика перевода геймов в сеты
-        if score[player_key]["games"] >= 6:
-            score[player_key]["sets"] += 1
-            score[player_key]["games"] = 0
-            score[other_player]["games"] = 0
+        elif match.current_game_state.startswith('advantage'):
+            current_advantage_player = int(match.current_game_state.split('_')[1])
+            if player_num == current_advantage_player:
+                MatchService._reset_game(score, player_key)
+                match.current_game_state = 'regular'
+            else:
+                score[player_key]["points"] += 1
+                match.current_game_state = 'deuce'
+
+        elif match.current_game_state == 'tie_break':
+            MatchService.process_tie_break(score, player_key, opponent_key)
+            match.current_game_state = 'regular'
+
+        # Проверка завершения сета (6 игр с разницей >= 2 или 7-5)
+        if score[player_key]["games"] >= MIN_GAMES and abs(
+                score[player_key]["games"] - score[opponent_key]["games"]) >= 2:
+            MatchService._reset_set(score, player_key)
+            match.current_game_state = 'regular'
+        elif score[player_key]["games"] == MIN_GAMES and score[opponent_key]["games"] == MIN_GAMES:
+            match.current_game_state = 'tie_break'
 
         match.score = json.dumps(score)
+
+        # Проверка завершения матча (2 сета)
+        if MatchService.is_match_finished(match):
+            if player_num == 1:
+                match.winner_id = match.player1_id
+            else:
+                match.winner_id = match.player2_id
+
         db.commit()
 
     @staticmethod
+    def process_tie_break(score, player_key, opponent_key):
+        if score[player_key]['points'] >= 7 and (score[player_key]['points'] - score[opponent_key]['points']) >= 1:
+            MatchService._reset_set(score, player_key)
+        else:
+            score[player_key]['points'] += 1
+
+    @staticmethod
+    def _reset_game(score: dict, winner_key: str):
+        score[winner_key]["games"] += 1
+        score[winner_key]["points"] = 0
+        opponent_key = "player2" if winner_key == "player1" else "player1"
+        score[opponent_key]["points"] = 0
+
+    @staticmethod
+    def _reset_set(score: dict, winner_key: str):
+        score[winner_key]["sets"] += 1
+        score[winner_key]["games"] = 0
+        opponent_key = "player2" if winner_key == "player1" else "player1"
+        score[opponent_key]["games"] = 0
+        score[winner_key]["points"] = 0
+        score[opponent_key]["points"] = 0
+
+    @staticmethod
     def is_match_finished(match: Match) -> bool:
-        """Проверка завершения матча"""
         score = json.loads(match.score)
-        return "winner" in score
-
-    @staticmethod
-    def finish_match(match: Match, winner: Player) -> None:
-        score = MatchService.get_score_data(match)
-        score["winner"] = winner.id
-        MatchService.set_score_data(match, score)
-
-    @staticmethod
-    def get_score_data(match: Match) -> dict:
-        """Десериализация счёта из JSON-строки"""
-        try:
-            return json.loads(match.score) if match.score else {"sets": 0, "games": 0, "points": 0}
-        except (TypeError, json.JSONDecodeError):
-            return {"sets": 0, "games": 0, "points": 0}
-
-    @staticmethod
-    def set_score_data(match: Match, value: dict) -> None:
-        """Сериализация счёта в JSON-строку"""
-        match.score = json.dumps(value, ensure_ascii=False)
+        return score["player1"]["sets"] == 2 or score["player2"]["sets"] == 2
 
     @staticmethod
     def get_match_by_uuid(db: Session, uuid: str) -> Match:
