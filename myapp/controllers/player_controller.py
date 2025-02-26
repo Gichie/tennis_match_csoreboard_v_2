@@ -1,5 +1,3 @@
-from sqlalchemy.orm import Session
-
 from myapp.database.session import get_db
 from myapp.models.player import Player
 

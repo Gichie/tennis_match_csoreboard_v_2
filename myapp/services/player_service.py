@@ -1,9 +1,9 @@
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
 import logging
 
-from myapp.models.player import Player
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
+from myapp.models.player import Player
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +35,6 @@ class PlayerService:
             db.commit()
             db.refresh(player)
         return player.id
-
-
 
     @staticmethod
     def get_name(db: Session, player_id: int) -> str:

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Завершённые матчи</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Завершённые матчи</h1>
+        <a href="/" class="btn">На главную</a>
+        <div class="matches-list">
+            {% if matches %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Игрок 1</th>
+                            <th>Игрок 2</th>
+                            <th>Победитель</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for match in matches %}
+                            <tr>
+                                <td>{{ match.player1.name }}</td>
+                                <td>{{ match.player2.name }}</td>
+                                <td>{{ match.winner.name }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Нет завершённых матчей.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

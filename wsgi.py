@@ -4,17 +4,20 @@ from whitenoise import WhiteNoise
 
 from myapp.controllers.home_controller import HomeController
 from myapp.controllers.match_controller import MatchController
+from myapp.controllers.completed_matches_cotroller import CompletedMatchesController
 
 
 home_controller = HomeController()
 match_controller = MatchController()
+completed_matches_controller = CompletedMatchesController()
 
 routes = {
     "GET": {
         "/": home_controller.index,
         "/index": home_controller.index,
         "/new-match": match_controller.new_match_form,
-        "/match-score": match_controller.match_score
+        "/match-score": match_controller.match_score,
+        '/completed-matches': completed_matches_controller.list_completed_matches
     },
     "POST": {
         "/new-match": match_controller.create_match,

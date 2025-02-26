@@ -6,15 +6,9 @@ from jinja2 import Environment, FileSystemLoader
 class MatchView:
     def __init__(self):
         template_path = os.path.join(os.path.dirname(__file__), '../templates')
-        loader = FileSystemLoader(
-            searchpath=template_path,
-            encoding='utf-8'  # Кодировка задаётся здесь
-        )
+        loader = FileSystemLoader(searchpath=template_path,encoding='utf-8')
 
-        self.env = Environment(
-            loader=loader,
-            autoescape=True  # Включаем автоэкранирование
-        )
+        self.env = Environment(loader=loader,autoescape=True)
         self.env.filters['tennis_points'] = lambda x: {0: '0', 1: '15', 2: '30', 3: '40'}.get(x, '40')
         self.env.filters['tie_break_points'] = lambda x: {0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6',
                                                           7: '7'}.get(x, f'{x}')

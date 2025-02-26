@@ -115,3 +115,7 @@ class MatchService:
     @staticmethod
     def get_match_by_uuid(db: Session, uuid: str) -> Match:
         return db.query(Match).filter(Match.uuid == uuid).first()
+
+    @staticmethod
+    def get_completed_matches(db: Session) -> list[Match]:
+        return db.query(Match).filter(Match.winner_id.isnot(None)).all()

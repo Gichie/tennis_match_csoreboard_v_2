@@ -173,3 +173,20 @@ th {
     padding: 10px;
     text-align: center;
 }
+
+.matches-list table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+.matches-list th,
+.matches-list td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.matches-list th {
+    background-color: #f2f2f2;
+}
