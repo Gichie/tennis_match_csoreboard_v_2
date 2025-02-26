@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from myapp.models.match import Match
 
-MIN_GAMES = 4
+MIN_GAMES = 3
 
 
 class MatchService:
@@ -83,10 +83,9 @@ class MatchService:
 
     @staticmethod
     def process_tie_break(score, player_key, opponent_key):
-        if score[player_key]['points'] >= 7 and (score[player_key]['points'] - score[opponent_key]['points']) >= 1:
+        score[player_key]['points'] += 1
+        if score[player_key]['points'] >= 7 and (score[player_key]['points'] - score[opponent_key]['points']) >= 2:
             MatchService._reset_set(score, player_key)
-        else:
-            score[player_key]['points'] += 1
 
     @staticmethod
     def _reset_game(score: dict, winner_key: str):
