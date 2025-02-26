@@ -54,7 +54,7 @@ class MatchController:
         match_uuid = query.get('uuid', [''])[0]
 
         with get_db() as db:
-            match = MatchService.get_match_by_uuid(db, match_uuid)  # Используем MatchService
+            match = MatchService.get_match_by_uuid(db, match_uuid)
 
             if not match:
                 return self._not_found(start_response)
