@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 from myapp.models.match import Match
 
 MIN_GAMES = 3
+MIN_SETS = 2
+SCORE_DIFF = 2
 
 
 class MatchService:
@@ -39,7 +41,8 @@ class MatchService:
 
         if match.current_game_state == "regular":
             score[player_key]["points"] += 1
-            if score[player_key]["points"] > 3 and score[player_key]["points"] - score[opponent_key]["points"] > 1:
+            if score[player_key]["points"] > 3 and score[player_key]["points"] - score[opponent_key][
+                "points"] >= SCORE_DIFF:
                 MatchService._reset_game(score, player_key)
             elif score[player_key]["points"] == 3 and score[opponent_key]["points"] == 3:
                 match.current_game_state = 'deuce'
@@ -64,7 +67,7 @@ class MatchService:
 
         # Проверка завершения сета (6 игр с разницей >= 2 или 7-5)
         if score[player_key]["games"] >= MIN_GAMES and abs(
-                score[player_key]["games"] - score[opponent_key]["games"]) >= 2:
+                score[player_key]["games"] - score[opponent_key]["games"]) >= SCORE_DIFF:
             MatchService._reset_set(score, player_key)
             match.current_game_state = 'regular'
         elif score[player_key]["games"] == MIN_GAMES and score[opponent_key]["games"] == MIN_GAMES:
@@ -84,7 +87,8 @@ class MatchService:
     @staticmethod
     def process_tie_break(score, player_key, opponent_key):
         score[player_key]['points'] += 1
-        if score[player_key]['points'] >= 7 and (score[player_key]['points'] - score[opponent_key]['points']) >= 2:
+        if score[player_key]['points'] >= 7 and (
+                score[player_key]['points'] - score[opponent_key]['points']) >= SCORE_DIFF:
             MatchService._reset_set(score, player_key)
 
     @staticmethod
@@ -106,7 +110,7 @@ class MatchService:
     @staticmethod
     def is_match_finished(match: Match) -> bool:
         score = json.loads(match.score)
-        return score["player1"]["sets"] == 2 or score["player2"]["sets"] == 2
+        return score["player1"]["sets"] == MIN_SETS or score["player2"]["sets"] == MIN_SETS
 
     @staticmethod
     def get_match_by_uuid(db: Session, uuid: str) -> Match:

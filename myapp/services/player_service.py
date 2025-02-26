@@ -20,14 +20,6 @@ class PlayerService:
             # Проверяем валидность имени
             if not name or not isinstance(name, str):
                 raise ValueError("Invalid player name")
-            player = db.query(Player).filter(Player.name.ilike(name)).first()
-            if not player:
-                player = PlayerService.create_player(name)
-                db.add(player)
-                db.commit()
-                db.refresh(player)
-            return player.id
-
         except SQLAlchemyError as e:
             db.rollback()
             logger.error(f"Error: {str(e)}")
@@ -35,6 +27,16 @@ class PlayerService:
         except Exception as e:
             logger.error(f"Error: {str(e)}")
             raise
+
+        player = db.query(Player).filter(Player.name.ilike(name)).first()
+        if not player:
+            player = PlayerService.create_player(name)
+            db.add(player)
+            db.commit()
+            db.refresh(player)
+        return player.id
+
+
 
     @staticmethod
     def get_name(db: Session, player_id: int) -> str:
