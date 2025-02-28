@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <span class="logo">TennisScoreboard</span>
+            </div>
+            <div class="header-right">
+                <a href="/" class="nav-link">Главная</a>
+                <a href="/matches?page=1&filter_by_player_name=" class="nav-link">Завершённые матчи</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Tennis Match Tracker. Все права не защищены.</p>
+    </footer>
+</body>
+</html>
