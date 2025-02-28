@@ -2,7 +2,8 @@ import json
 import uuid
 from typing import Dict
 
-from sqlalchemy.orm import Session
+from sqlalchemy import or_
+from sqlalchemy.orm import Session, joinedload
 
 from myapp.models.match import Match
 
@@ -117,5 +118,28 @@ class MatchService:
         return db.query(Match).filter(Match.uuid == uuid).first()
 
     @staticmethod
-    def get_completed_matches(db: Session) -> list[Match]:
-        return db.query(Match).filter(Match.winner_id.isnot(None)).all()
+    def get_completed_matches(
+            db: Session,
+            page: int = 1,
+            per_page: int = 10,
+            player_name: str | None = None
+    ) -> tuple[list[Match], int]:
+        query = (
+            db.query(Match)
+            .options(
+                joinedload(Match.player1),
+                joinedload(Match.player2),
+                joinedload(Match.winner)
+            )
+            .filter(Match.winner_id.isnot(None))
+        )
+
+        # Фильтр по имени игрока
+        if player_name:
+            query = query.filter(or_(Match.player1.has(name=player_name), Match.player2.has(name=player_name)))
+
+        # Пагинация
+        total = query.count()
+        matches = (query.offset((page - 1) * per_page).limit(per_page).all())
+
+        return matches, total

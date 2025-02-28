@@ -190,3 +190,44 @@ th {
 .matches-list th {
     background-color: #f2f2f2;
 }
+
+/* Фильтр */
+.filter-form {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+}
+
+.filter-form input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex-grow: 1;
+}
+
+/* Пагинация */
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Таблица */
+.matches-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+.matches-table th,
+.matches-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.matches-table th {
+    background-color: #f2f2f2;
+}

@@ -17,7 +17,7 @@ routes = {
         "/index": home_controller.index,
         "/new-match": match_controller.new_match_form,
         "/match-score": match_controller.match_score,
-        '/completed-matches': completed_matches_controller.list_completed_matches
+        '/matches': completed_matches_controller.list_completed_matches
     },
     "POST": {
         "/new-match": match_controller.create_match,
