@@ -3,11 +3,21 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <div class="home-container">
-        <h1>Tennis match scoreboard!</h1>
-        <div class="links">
-            <a href="/new-match" class="link-button">New match</a>
-            <a href="/matches?page=1&filter_by_player_name=" class="link-button">Completed matches</a>
+    <div class="home-page-wrapper">
+        <div class="home-image left-image">
+            <img src="/static/images/player_left.jpeg" alt="Tennis image left">
+        </div>
+
+        <div class="home-container">
+            <h1>Tennis match scoreboard!</h1>
+            <div class="links">
+                <a href="/new-match" class="link-button">New match</a>
+                <a href="/matches?page=1&filter_by_player_name=" class="link-button">Completed matches</a>
+            </div>
+        </div>
+
+        <div class="home-image right-image">
+            <img src="/static/images/player_right.jpeg" alt="Tennis image right">
         </div>
     </div>
 {% endblock %}

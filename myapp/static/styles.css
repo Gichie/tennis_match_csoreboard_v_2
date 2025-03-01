@@ -7,7 +7,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    flex-direction: column;
 }
 
 /* Контейнер для главной страницы */
@@ -38,7 +39,7 @@ body {
 .link-button {
     background-color: #007bff;
     color: #fff;
-    padding: 10px;
+    padding: 11px;
     border-radius: 4px;
     text-decoration: none;
     font-size: 16px;
@@ -306,5 +307,83 @@ th {
     .header-right {
         flex-wrap: wrap;
         justify-content: center;
+    }
+}
+
+/* Обертка для домашней страницы */
+.home-page-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 57px;
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 20px;
+    flex-grow: 1; /* Занимает доступное пространство */
+}
+
+/* Контейнеры для изображений */
+.home-image {
+    flex: 1;
+    text-align: center;
+    max-width: 400px; /* Ограничиваем ширину изображений */
+}
+
+.home-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    object-fit: cover; /* Сохраняет пропорции изображения */
+    transition: transform 0.4s ease;
+}
+
+.home-image:hover img {
+    transform: scale(1.03);
+}
+
+/* Корректировка стилей центрального контейнера */
+.home-container {
+    flex: 0 1 400px; /* Фиксированная базовая ширина */
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 302px;
+    margin: 0 20px;
+}
+
+/* Медиа-запрос для мобильных устройств */
+@media (max-width: 768px) {
+    .home-page-wrapper {
+        flex-direction: column;
+        margin-top: 60px;
+        gap: 30px;
+    }
+
+    .home-image {
+        order: 0; /* Изображения будут ниже центрального блока на мобильных */
+        max-width: 100%;
+    }
+
+    .home-container {
+        order: 1;
+    }
+
+    .right-image {
+        order: 3;
+    }
+
+    .home-image img {
+        max-height: 250px; /* Ограничение высоты для мобильных */
+    }
+
+    .home-container {
+        flex: none;
+        width: 90%;
+        max-width: none;
+        margin: 0;
     }
 }
