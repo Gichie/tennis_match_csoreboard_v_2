@@ -1,24 +1,21 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Матч завершён | {{ player1 }} vs {{ player2 }}</title>
-    <link rel="stylesheet" href="/static/styles.css">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}The match is over | {{ player1 }} vs {{ player2 }}{% endblock %}
+
+{% block content %}
     <div class="container">
         <div class="final-score">
-            <h1>Матч завершён! 🏆</h1>
+            <h1>The match is over 🏆</h1>
             <p class="winner-info">
-                Победитель: <strong>{{ winner }}</strong>
+                Winner: <strong>{{ winner }}</strong>
             </p>
             <div class="score-summary">
-                <h2>Итоговый счёт:</h2>
+                <h2>Final score:</h2>
                 <table>
                     <thead>
                         <tr>
-                            <th>Игрок</th>
-                            <th>Сеты</th>
+                            <th>Player</th>
+                            <th>Sets</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,10 +31,9 @@
                 </table>
             </div>
             <div class="navigation">
-                <a href="/matches" class="btn">Список завершённых матчей</a>
-                <a href="/" class="btn">На главную</a>
+                <a href="/matches" class="btn">Completed matches</a>
+                <a href="/" class="btn">Home</a>
             </div>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}

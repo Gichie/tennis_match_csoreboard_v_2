@@ -76,12 +76,12 @@ class MatchService:
 
         match.score = json.dumps(score)
 
-        # Проверка завершения матча (2 сета)
         if MatchService.is_match_finished(match):
             if player_num == 1:
                 match.winner_id = match.player1_id
             else:
                 match.winner_id = match.player2_id
+            match.current_game_state = 'finished'
 
         db.commit()
 

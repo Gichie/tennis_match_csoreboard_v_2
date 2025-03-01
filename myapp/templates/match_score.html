@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Счёт матча {{ uuid|default('Неизвестный матч') }}</title>
-    <link rel="stylesheet" href="/static/styles.css">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Match score {{ uuid|default('Unknown match') }}{% endblock %}
+
+{% block content %}
     <div class="container">
         <h1>
             Match between
-            {{ player1|default('Игрок 1') }} and
-            {{ player2|default('Игрок 2') }}
+            {{ player1|default('Player 1') }} and
+            {{ player2|default('Player 2') }}
         </h1>
         <div class="scoreboard">
             <h2>Current score:</h2>
@@ -61,10 +58,10 @@
                     {% if not finished %}
                     <div class="score-buttons">
                         <button type="submit" name="player1_point" value="1" class="btn player1">
-                            {{ player1|default('Игрок 1') }} выиграл очко
+                            {{ player1|default('Player 1') }} won a point
                         </button>
                         <button type="submit" name="player2_point" value="1" class="btn player2">
-                            {{ player2|default('Игрок 2') }} выиграл очко
+                            {{ player2|default('Player 2') }} won a point
                         </button>
                     </div>
                     {% endif %}
@@ -74,5 +71,4 @@
             {% endif %}
         </div>
     </div>
-</body>
-</html>
+{% endblock %}

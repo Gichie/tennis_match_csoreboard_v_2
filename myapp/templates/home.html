@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Главная{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
     <div class="home-container">
-        <h1>Табло теннисного матча!</h1>
+        <h1>Tennis match scoreboard!</h1>
         <div class="links">
-            <a href="/new-match" class="link-button">Новый матч</a>
-            <a href="/matches?page=1&filter_by_player_name=" class="link-button">Завершённые матчи</a>
+            <a href="/new-match" class="link-button">New match</a>
+            <a href="/matches?page=1&filter_by_player_name=" class="link-button">Completed matches</a>
         </div>
     </div>
 {% endblock %}

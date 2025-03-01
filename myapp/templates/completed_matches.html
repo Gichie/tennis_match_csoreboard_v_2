@@ -1,65 +1,65 @@
 {% extends "base.html" %}
 
-{% block title %}Завершенные матчи{% endblock %}
+{% block title %}Completed matches{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Завершённые матчи</h1>
+    <div class="container">
+        <h1>Completed matches</h1>
 
-    <!-- Форма фильтрации -->
-    <form method="GET" action="/matches" class="filter-form">
-        <input
-                type="text"
-                name="filter_by_player_name"
-                placeholder="Имя игрока"
-                value="{{ player_name or '' }}"
-        >
-        <button type="submit" class="btn">Искать</button>
-    </form>
+        <!-- Форма фильтрации -->
+        <form method="GET" action="/matches" class="filter-form">
+            <input
+                    type="text"
+                    name="filter_by_player_name"
+                    placeholder="Player name"
+                    value="{{ player_name or '' }}"
+            >
+            <button type="submit" class="btn">Search</button>
+        </form>
 
-    <!-- Список матчей -->
-    {% if matches %}
-        <table class="matches-table">
-            <thead>
-            <tr>
-                <th>Игрок 1</th>
-                <th>Игрок 2</th>
-                <th>Победитель</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for match in matches %}
+        <!-- Список матчей -->
+        {% if matches %}
+            <table class="matches-table">
+                <thead>
                 <tr>
-                    <td>{{ match.player1 }}</td>
-                    <td>{{ match.player2 }}</td>
-                    <td>{{ match.winner }}</td>
+                    <th>Player 1</th>
+                    <th>Player 2</th>
+                    <th>Winner</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>Матчей не найдено.</p>
-    {% endif %}
+                </thead>
+                <tbody>
+                {% for match in matches %}
+                    <tr>
+                        <td>{{ match.player1 }}</td>
+                        <td>{{ match.player2 }}</td>
+                        <td>{{ match.winner }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No matches found.</p>
+        {% endif %}
 
-    <!-- Пагинация -->
-    {% if total_pages > 1 %}
-        <div class="pagination">
-            {% if current_page > 1 %}
-                <a
-                        href="/matches?page={{ current_page - 1 }}&filter_by_player_name={{ player_name or '' }}"
-                        class="btn"
-                >← Назад</a>
-            {% endif %}
+        <!-- Пагинация -->
+        {% if total_pages > 1 %}
+            <div class="pagination">
+                {% if current_page > 1 %}
+                    <a
+                            href="/matches?page={{ current_page - 1 }}&filter_by_player_name={{ player_name or '' }}"
+                            class="btn"
+                    >← Back</a>
+                {% endif %}
 
-            <span>Страница {{ current_page }} из {{ total_pages }}</span>
+                <span>page {{ current_page }} of {{ total_pages }}</span>
 
-            {% if current_page < total_pages %}
-                <a
-                        href="/matches?page={{ current_page + 1 }}&filter_by_player_name={{ player_name or '' }}"
-                        class="btn"
-                >Вперёд →</a>
-            {% endif %}
-        </div>
-    {% endif %}
-</div>
+                {% if current_page < total_pages %}
+                    <a
+                            href="/matches?page={{ current_page + 1 }}&filter_by_player_name={{ player_name or '' }}"
+                            class="btn"
+                    >Next →</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
