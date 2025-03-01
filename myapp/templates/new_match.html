@@ -3,18 +3,29 @@
 {% block title %}New match{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h1>Create new match</h1>
-        <form method="POST" action="/new-match" accept-charset="UTF-8">
-            <div class="form-group">
-                <label for="player1">Player 1:</label>
-                <input type="text" id="player1" name="player1" required>
-            </div>
-            <div class="form-group">
-                <label for="player2">Player 2:</label>
-                <input type="text" id="player2" name="player2" required>
-            </div>
-            <button type="submit" class="btn">Start the match</button>
-        </form>
+    <div class="home-page-wrapper">
+        <div class="home-image left-image">
+            <img src="/static/images/new.jpeg" alt="Tennis image left">
+        </div>
+
+        <div class="container">
+            <h1>Create new match</h1>
+            <form method="POST" action="/new-match" accept-charset="UTF-8">
+                <div class="form-group">
+                    <label for="player1">Player 1:</label>
+                    <input type="text" id="player1" name="player1" required>
+                </div>
+                <div class="form-group">
+                    <label for="player2">Player 2:</label>
+                    <input type="text" id="player2" name="player2" required>
+                </div>
+                <button type="submit" class="btn">Start the match</button>
+            </form>
+        </div>
+
+        <div class="new_match-image right-image">
+            <img src="/static/images/new_match_right.jpeg" alt="pepe">
+        </div>
+
     </div>
 {% endblock %}
