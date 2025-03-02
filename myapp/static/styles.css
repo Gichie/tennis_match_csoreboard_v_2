@@ -47,8 +47,10 @@ body {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     max-width: 500px;
-    margin: 2rem auto;
+    margin: 0; /* Убрано auto */
     text-align: center;
+    flex-shrink: 0;
+    width: 500px; /* Фиксированная ширина */
 }
 
 .container h1{
@@ -321,21 +323,21 @@ tr:not(:last-child) {
 /* Обертка для домашней страницы */
 .page-wrapper {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     gap: 57px;
     width: 100%;
-    max-width: 1300px;
+    max-width: 1302px;
     margin: 0 auto;
-    padding: 0 20px;
-    flex-grow: 1; /* Занимает доступное пространство */
+    padding: 20px;
+    flex-wrap: nowrap;
 }
 
 /* Контейнеры для изображений */
 .image {
     flex: 1;
     text-align: center;
-    max-width: 400px; /* Ограничиваем ширину изображений */
+    max-width: 401px; /* Ограничиваем ширину изображений */
 }
 
 .image img {
@@ -345,6 +347,8 @@ tr:not(:last-child) {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     object-fit: cover; /* Сохраняет пропорции изображения */
     transition: transform 0.4s ease;
+    width: 100%;
+    display: block;
 }
 
 .image:hover img {
@@ -364,16 +368,19 @@ tr:not(:last-child) {
 }
 
 /* Медиа-запрос для мобильных устройств */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .page-wrapper {
         flex-direction: column;
         margin-top: 60px;
         gap: 30px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
     .image {
         order: 0; /* Изображения будут ниже центрального блока на мобильных */
-        max-width: 100%;
+        flex: 0 0 300px;
+        max-width: 300px;
     }
 
     .home-container {

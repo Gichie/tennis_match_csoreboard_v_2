@@ -3,37 +3,48 @@
 {% block title %}The match is over | {{ player1 }} vs {{ player2 }}{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="final-score">
-            <h1>The match is over 🏆</h1>
-            <p class="winner-info">
-                Winner: <strong>{{ winner }}</strong>
-            </p>
-            <div class="score-summary">
-                <h2>Final score:</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Player</th>
-                            <th>Sets</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{{ player1 }}</td>
-                            <td>{{ player1_sets }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ player2 }}</td>
-                            <td>{{ player2_sets }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+    <div class="page-wrapper">
+        <div class="image left-image">
+            <img src="/static/images/final_score_left.jpeg" alt="Tennis image left">
+        </div>
+
+        <div class="container">
+            <div class="final-score">
+                <h1>The match is over 🏆</h1>
+                <p class="winner-info">
+                    Winner: <strong>{{ winner }}</strong>
+                </p>
+                <div class="score-summary">
+                    <h2>Final score:</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Sets</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ player1 }}</td>
+                                <td>{{ player1_sets }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ player2 }}</td>
+                                <td>{{ player2_sets }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="navigation">
+                    <a href="/matches" class="btn">Completed matches</a>
+                    <a href="/" class="btn">Home</a>
+                </div>
             </div>
-            <div class="navigation">
-                <a href="/matches" class="btn">Completed matches</a>
-                <a href="/" class="btn">Home</a>
-            </div>
+        </div>
+
+
+        <div class="image right-image">
+            <img src="/static/images/final_score_right.jpeg" alt="Tennis image right">
         </div>
     </div>
 {% endblock %}
