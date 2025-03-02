@@ -11,16 +11,6 @@ body {
     flex-direction: column;
 }
 
-/* Контейнер для главной страницы */
-.home-container {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    text-align: center;
-}
-
 /* Заголовок */
 .home-container h1 {
     font-size: 24px;
@@ -58,6 +48,13 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     max-width: 500px;
     margin: 2rem auto;
+    text-align: center;
+}
+
+.container h1{
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
 }
 
 .form-group {
@@ -97,6 +94,10 @@ input[type="text"] {
     margin: 1rem 0;
 }
 
+.scoreboard h2 {
+    font-size: 23px;
+}
+
 .buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -123,15 +124,22 @@ input[type="text"] {
 table {
     border-collapse: collapse;
     margin-right: 20px; /* Отступ между таблицей и кнопками */
+    border: 1px solid #ddd; /* Внешняя рамка таблицы (опционально) */
 }
 
 th, td {
-    border: 1px solid #ddd;
+    border: none;
     padding: 8px;
 }
 
 th {
     background-color: #f2f2f2;
+    border-bottom: 1px solid #ddd; /* Линия под заголовками (опционально) */
+}
+
+/* Для визуального разделения строк (опционально) */
+tr:not(:last-child) {
+    border-bottom: 1px solid #ddd;
 }
 
 .score-buttons {
@@ -311,7 +319,7 @@ th {
 }
 
 /* Обертка для домашней страницы */
-.home-page-wrapper {
+.page-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -324,13 +332,13 @@ th {
 }
 
 /* Контейнеры для изображений */
-.home-image {
+.image {
     flex: 1;
     text-align: center;
     max-width: 400px; /* Ограничиваем ширину изображений */
 }
 
-.home-image img {
+.image img {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
@@ -339,7 +347,7 @@ th {
     transition: transform 0.4s ease;
 }
 
-.home-image:hover img {
+.image:hover img {
     transform: scale(1.03);
 }
 
@@ -357,13 +365,13 @@ th {
 
 /* Медиа-запрос для мобильных устройств */
 @media (max-width: 768px) {
-    .home-page-wrapper {
+    .page-wrapper {
         flex-direction: column;
         margin-top: 60px;
         gap: 30px;
     }
 
-    .home-image {
+    .image {
         order: 0; /* Изображения будут ниже центрального блока на мобильных */
         max-width: 100%;
     }
@@ -376,7 +384,7 @@ th {
         order: 3;
     }
 
-    .home-image img {
+    .image img {
         max-height: 250px; /* Ограничение высоты для мобильных */
     }
 
