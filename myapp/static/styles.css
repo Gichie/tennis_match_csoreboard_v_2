@@ -318,9 +318,9 @@ tr:not(:last-child) {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 57px;
+    gap: 110px;
     width: 100%;
-    max-width: 1302px;
+    max-width: 1360px;
     margin: 0 auto;
     padding: 20px;
     flex-wrap: nowrap;
