@@ -6,7 +6,6 @@ class HomeController:
         self.view = HomeView()
 
     def index(self, environ, start_response):
-        # Рендерим главную страницу
         response_body = self.view.render_home()
         status = '200 OK'
         headers = [('Content-Type', 'text/html')]

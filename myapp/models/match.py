@@ -1,24 +1,24 @@
 import json
 
-from sqlalchemy import Column, Integer, String, ForeignKey, event
-from sqlalchemy.orm import relationship
+from sqlalchemy import String, ForeignKey, event, JSON
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from .base import Base
+from .player import Player
 
 
 class Match(Base):
     __tablename__ = 'matches'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    uuid = Column(String(36), nullable=False, unique=True)
-    player1_id = Column(Integer, ForeignKey('players.id'), nullable=False)
-    player2_id = Column(Integer, ForeignKey('players.id'), nullable=False)
-    winner_id = Column(Integer, ForeignKey('players.id'), nullable=True)
-    score = Column(String(1000), nullable=False)
-    current_game_state = Column(String(26), default='regular')
+    uuid: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
+    player1_id: Mapped[int] = mapped_column(ForeignKey('players.id'), nullable=False)
+    player2_id: Mapped[int] = mapped_column(ForeignKey('players.id'), nullable=False)
+    winner_id: Mapped[int] = mapped_column(ForeignKey('players.id'), nullable=True)
+    score: Mapped[JSON] = mapped_column(JSON, nullable=False)
+    current_game_state: Mapped[str] = mapped_column(String(26), default='regular')
 
-    player1 = relationship("Player", foreign_keys=[player1_id], back_populates="matches_as_player1")
-    player2 = relationship("Player", foreign_keys=[player2_id], back_populates="matches_as_player2")
-    winner = relationship("Player", foreign_keys=[winner_id], back_populates="matches_as_winner")
+    player1: Mapped[Player] = relationship(foreign_keys=[player1_id], back_populates="matches_as_player1")
+    player2: Mapped[Player] = relationship(foreign_keys=[player2_id], back_populates="matches_as_player2")
+    winner: Mapped[Player] = relationship(foreign_keys=[winner_id], back_populates="matches_as_winner")
 
 
 # Обработчик события
