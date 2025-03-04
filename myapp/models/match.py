@@ -25,7 +25,8 @@ class Match(Base):
 @event.listens_for(Match, 'before_insert')
 def set_default_score(mapper, connection, target):
     if not target.score:
-        target.score = json.dumps({"sets": 0, "games": 0, "points": 0}, ensure_ascii=False)
+        target.score = json.dumps({"player1": {"sets": 0, "games": 0, "points": 0},
+                                   "player2": {"sets": 0, "games": 0, "points": 0}}, ensure_ascii=False)
 
 
 @event.listens_for(Match, 'before_insert')

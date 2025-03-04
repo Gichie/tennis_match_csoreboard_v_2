@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from myapp.models.match import Match
 
+MIN_POINTS = 3
 MIN_GAMES = 3
 MIN_SETS = 2
 SCORE_DIFF = 2
@@ -14,18 +15,9 @@ SCORE_DIFF = 2
 
 class MatchService:
     @staticmethod
-    def get_initial_score() -> Dict:
-        """Возвращает начальную структуру счёта"""
-        return {
-            "player1": {"sets": 0, "games": 0, "points": 0},
-            "player2": {"sets": 0, "games": 0, "points": 0}
-        }
-
-    @staticmethod
     def create_match(db: Session, player1_id: int, player2_id: int) -> Match:
         new_match = Match(
             uuid=str(uuid.uuid4()),
-            score=json.dumps(MatchService.get_initial_score()),
             player1_id=player1_id,
             player2_id=player2_id
         )
@@ -42,10 +34,10 @@ class MatchService:
 
         if match.current_game_state == "regular":
             score[player_key]["points"] += 1
-            if score[player_key]["points"] > 3 and score[player_key]["points"] - score[opponent_key][
+            if score[player_key]["points"] > MIN_POINTS and score[player_key]["points"] - score[opponent_key][
                 "points"] >= SCORE_DIFF:
                 MatchService._reset_game(score, player_key)
-            elif score[player_key]["points"] == 3 and score[opponent_key]["points"] == 3:
+            elif score[player_key]["points"] == MIN_POINTS and score[opponent_key]["points"] == MIN_POINTS:
                 match.current_game_state = 'deuce'
 
         elif match.current_game_state == 'deuce':
