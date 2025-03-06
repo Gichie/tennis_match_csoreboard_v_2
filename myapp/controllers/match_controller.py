@@ -55,18 +55,18 @@ class MatchController:
 
         with get_db() as db:
             match = MatchService.get_match_by_uuid(db, match_uuid)
+            score = json.loads(match.score)
 
             if not match:
                 return self._not_found(start_response)
 
             if environ['REQUEST_METHOD'] == 'POST':
-                return self._handle_score_update(environ, start_response, match, db)
+                return self._handle_score_update(environ, start_response, match, score, db)
 
-            return self._render_score_page(start_response, match)
+            return self._render_score_page(start_response, match, score)
 
-    def _handle_score_update(self, environ, start_response, match, db):
+    def _handle_score_update(self, environ, start_response, match, score, db):
         try:
-            # Парсим POST данные
             content_length = int(environ.get('CONTENT_LENGTH', 0))
             post_data = environ['wsgi.input'].read(content_length).decode('utf-8')
             params = parse_qs(post_data)
@@ -80,25 +80,20 @@ class MatchController:
                 return self._bad_request(start_response)
 
             # Обновляем счёт
-            MatchService.add_point(db, match, player_num)
+            MatchService.add_point(db, match, score, player_num)
 
             # Проверяем завершение матча
-            if MatchService.is_match_finished(match):
+            if MatchService.is_match_finished(score):
                 return self._render_final_score(start_response, match)
 
-            return self._render_score_page(start_response, match)
+            return self._render_score_page(start_response, match, score)
 
         except Exception as e:
             start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
             return [b'Error processing request']
 
-    def _render_score_page(self, start_response, match):
+    def _render_score_page(self, start_response, match, score):
         with get_db() as db:
-            try:
-                score = json.loads(match.score) if match.score else {"sets": 0, "games": 0, "points": 0}
-            except json.JSONDecodeError:
-                score = {"sets": 0, "games": 0, "points": 0}
-
             context = {
                 "uuid": match.uuid,
                 "player1": PlayerService.get_name(db, match.player1_id),
