@@ -1,5 +1,5 @@
-from myapp.database.session import get_db
-from myapp.models.player import Player
+from src.database.session import get_db
+from src.models.player import Player
 
 
 class PlayerController:

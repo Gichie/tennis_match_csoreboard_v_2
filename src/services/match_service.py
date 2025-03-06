@@ -4,11 +4,11 @@ import uuid
 from sqlalchemy import or_
 from sqlalchemy.orm import Session, joinedload
 
-from myapp.models.match import Match
-from myapp.services.strategies.advantage_state_strategy import AdvantageStateStrategy
-from myapp.services.strategies.deuce_state_strategy import DeuceStateStrategy
-from myapp.services.strategies.regular_state_strategy import RegularStateStrategy
-from myapp.services.strategies.tie_break_state_strategy import TieBreakStateStrategy
+from src.models.match import Match
+from src.services.strategies.advantage_state_strategy import AdvantageStateStrategy
+from src.services.strategies.deuce_state_strategy import DeuceStateStrategy
+from src.services.strategies.regular_state_strategy import RegularStateStrategy
+from src.services.strategies.tie_break_state_strategy import TieBreakStateStrategy
 
 MIN_POINTS = 3
 MIN_GAMES = 3

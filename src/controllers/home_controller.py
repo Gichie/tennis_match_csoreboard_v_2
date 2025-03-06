@@ -1,4 +1,4 @@
-from myapp.views.home_view import HomeView
+from src.views.home_view import HomeView
 
 
 class HomeController:

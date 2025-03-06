@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from myapp.models.match import Match
+from src.models.match import Match
 from typing import Callable
 
 

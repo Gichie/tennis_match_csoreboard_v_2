@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from contextlib import contextmanager
 
-from myapp.config import DATABASE_URI
+from src.config import DATABASE_URI
 
 # Настройка подключения к базе данных
 engine = create_engine(DATABASE_URI, echo=True)

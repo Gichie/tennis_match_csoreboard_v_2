@@ -2,9 +2,9 @@ import json
 import math
 from urllib.parse import parse_qs
 
-from myapp.database.session import get_db
-from myapp.services.match_service import MatchService
-from myapp.views.completed_matches_view import CompletedMatchesView
+from src.database.session import get_db
+from src.services.match_service import MatchService
+from src.views.completed_matches_view import CompletedMatchesView
 
 PER_PAGE = 10  # Количество матчей на странице
 

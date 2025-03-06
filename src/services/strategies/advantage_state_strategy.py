@@ -1,16 +1,13 @@
-from myapp.models.match import Match
-from myapp.services.strategies.game_state_strategy import (
+from src.models.match import Match
+from src.services.strategies.game_state_strategy import (
     GameStateStrategy,
     ResetGameFuncType,
     ResetSetFuncType,
     ProcessTieBreakFuncType
 )
 
-MIN_POINTS = 3
-SCORE_DIFF = 2
 
-
-class RegularStateStrategy(GameStateStrategy):
+class AdvantageStateStrategy(GameStateStrategy):
     def add_point(
             self,
             match: Match,
@@ -22,15 +19,10 @@ class RegularStateStrategy(GameStateStrategy):
             reset_set_func: ResetSetFuncType,
             process_tie_break_func: ProcessTieBreakFuncType
     ) -> None:
-
-        score[player_key]["points"] += 1
-        if (
-                score[player_key]["points"] > MIN_POINTS and
-                score[player_key]["points"] - score[opponent_key]["points"] >= SCORE_DIFF
-        ):
+        current_advantage_player = int(match.current_game_state.split('_')[1])
+        if player_num == current_advantage_player:
             reset_game_func(score, player_key)
-        elif (
-                score[player_key]["points"] == MIN_POINTS and
-                score[opponent_key]["points"] == MIN_POINTS
-        ):
+            match.current_game_state = 'regular'
+        else:
+            score[player_key]["points"] += 1
             match.current_game_state = 'deuce'

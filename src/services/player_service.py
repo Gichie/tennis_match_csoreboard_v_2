@@ -3,7 +3,7 @@ import logging
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from myapp.models.player import Player
+from src.models.player import Player
 
 logger = logging.getLogger(__name__)
 

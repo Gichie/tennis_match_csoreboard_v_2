@@ -1,10 +1,10 @@
 import json
 from urllib.parse import parse_qs
 
-from myapp.database.session import get_db
-from myapp.services.match_service import MatchService
-from myapp.services.player_service import PlayerService
-from myapp.views.match_view import MatchView
+from src.database.session import get_db
+from src.services.match_service import MatchService
+from src.services.player_service import PlayerService
+from src.views.match_view import MatchView
 
 
 class MatchController:

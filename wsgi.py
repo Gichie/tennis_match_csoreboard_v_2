@@ -2,9 +2,9 @@ import os
 
 from whitenoise import WhiteNoise
 
-from myapp.controllers.home_controller import HomeController
-from myapp.controllers.match_controller import MatchController
-from myapp.controllers.completed_matches_cotroller import CompletedMatchesController
+from src.controllers.home_controller import HomeController
+from src.controllers.match_controller import MatchController
+from src.controllers.completed_matches_cotroller import CompletedMatchesController
 
 
 home_controller = HomeController()
@@ -43,5 +43,5 @@ def application(environ, start_response):
 
 
 # Путь к статическим файлам
-static_path = os.path.join(os.path.dirname(__file__), 'myapp/static')
+static_path = os.path.join(os.path.dirname(__file__), 'src/static')
 app_with_static = WhiteNoise(application, root=static_path, prefix='/static')
