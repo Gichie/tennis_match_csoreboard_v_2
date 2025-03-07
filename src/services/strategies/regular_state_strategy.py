@@ -1,9 +1,8 @@
 from src.models.match import Match
-from src.services.score_utils import reset_game
+from src.services.score_utils import reset_game, SCORE_DIFF
 from src.services.strategies.game_state_strategy import GameStateStrategy
 
 MIN_POINTS = 3
-SCORE_DIFF = 2
 
 
 class RegularStateStrategy(GameStateStrategy):

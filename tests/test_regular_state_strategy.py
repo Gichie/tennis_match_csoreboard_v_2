@@ -1,29 +1,13 @@
 import json
-import uuid
 
 import pytest
 
-from src.models.match import Match
 from src.services.strategies.regular_state_strategy import RegularStateStrategy
-
-
-@pytest.fixture
-def match():
-    return Match(
-        uuid=str(uuid.uuid4()),
-        player1_id=1,
-        player2_id=2,
-        score=json.dumps({
-            "player1": {"sets": 0, "games": 0, "points": 0},
-            "player2": {"sets": 0, "games": 0, "points": 0}
-        }),
-        current_game_state='regular'
-    )
 
 
 class TestRegularStateStrategy:
     @pytest.mark.parametrize(
-        "initial_dcore, "
+        "initial_score, "
         "player_key, "
         "expected_state, "
         "expected_points_player1, "
@@ -44,7 +28,7 @@ class TestRegularStateStrategy:
     def test_add_point(
             self,
             match,
-            initial_dcore,
+            initial_score,
             player_key,
             expected_state,
             expected_points_player1,
@@ -54,8 +38,8 @@ class TestRegularStateStrategy:
     ):
         strategy = RegularStateStrategy()
         score = json.loads(match.score)
-        score["player1"]["points"] = initial_dcore["player1"]["points"]
-        score["player2"]["points"] = initial_dcore["player2"]["points"]
+        score["player1"]["points"] = initial_score["player1"]["points"]
+        score["player2"]["points"] = initial_score["player2"]["points"]
 
         strategy.add_point(
             match,
