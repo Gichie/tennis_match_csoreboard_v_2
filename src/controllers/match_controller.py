@@ -5,6 +5,7 @@ from src.database.session import get_db
 from src.services.match_service import MatchService
 from src.services.player_service import PlayerService
 from src.views.match_view import MatchView
+from src.services import score_utils
 
 
 class MatchController:
@@ -83,7 +84,7 @@ class MatchController:
             MatchService.add_point(db, match, score, player_num)
 
             # Проверяем завершение матча
-            if MatchService.is_match_finished(score):
+            if score_utils.is_match_finished(score):
                 return self._render_final_score(start_response, match)
 
             return self._render_score_page(start_response, match, score)
