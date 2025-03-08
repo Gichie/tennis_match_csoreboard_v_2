@@ -1,22 +1,25 @@
+from src.models.match import Match
+
 SCORE_DIFF = 2
-MIN_GAMES = 3
+MIN_GAMES = 6
 MIN_SETS = 2
 
 
-def process_tie_break(score: dict, player_key: str, opponent_key: str) -> None:
+def process_tie_break(match: Match, score: dict, player_key: str, opponent_key: str) -> None:
     score[player_key]['points'] += 1
     if (score[player_key]['points'] >= 7 and
             (score[player_key]['points'] - score[opponent_key]['points']) >= SCORE_DIFF):
-        reset_set(score, player_key)
+        reset_set(match, score, player_key)
 
 
-def reset_set(score: dict, winner_key: str) -> None:
+def reset_set(match: Match, score: dict, winner_key: str) -> None:
     score[winner_key]["sets"] += 1
     score[winner_key]["games"] = 0
     opponent_key = "player2" if winner_key == "player1" else "player1"
     score[opponent_key]["games"] = 0
     score[winner_key]["points"] = 0
     score[opponent_key]["points"] = 0
+    match.current_game_state = 'regular'
 
 
 def reset_game(score: dict, winner_key: str) -> None:

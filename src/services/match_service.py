@@ -56,9 +56,6 @@ class MatchService:
 
         if score_utils.is_set_finished(score, player_key, opponent_key):
             score_utils.reset_set(score, player_key)
-            match.current_game_state = 'regular'
-        elif score_utils.is_tie_break(score, player_key, opponent_key):
-            match.current_game_state = 'tie_break'
 
         if score_utils.is_match_finished(score):
             if player_num == 1:
