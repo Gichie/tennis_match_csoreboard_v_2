@@ -18,3 +18,13 @@ def match():
         }),
         current_game_state='regular'
     )
+
+
+def setup_score(match, initial_score):
+    score = json.loads(match.score)
+    for player in ["player1", "player2"]:
+        if player in initial_score:
+            for key in ["points", "games", "sets"]:
+                if key in initial_score[player]:
+                    score[player][key] = initial_score[player][key]
+    return score
