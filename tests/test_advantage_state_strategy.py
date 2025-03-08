@@ -42,6 +42,16 @@ class TestAdvantageStateStrategy:
                     0, 0,
                     3, 0,
                     0, 0
+            ),
+            # Тест 6: Переход в tie-break при advantage_1 и счете в геймах 6-6
+            (
+                    {"player1": {"points": 4, "games": 5}, "player2": {"points": 3, "games": 6}},
+                    "player1",
+                    "advantage_1",
+                    "tie_break",
+                    0, 0,
+                    6, 6,
+                    0, 0
             )
         ],
         ids=[
@@ -49,7 +59,8 @@ class TestAdvantageStateStrategy:
             "WinGamePlayer2(4-3)",
             "WinGamePlayer2(3-4)",
             "BackToDeuceFromAdv2",
-            "IncrementExistingGames"
+            "IncrementExistingGames",
+            "TieBreak"
         ]
     )
     def test_add_point(

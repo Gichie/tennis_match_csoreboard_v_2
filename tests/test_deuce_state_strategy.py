@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 from src.services.strategies.deuce_state_strategy import DeuceStateStrategy

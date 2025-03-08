@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 from src.services.strategies.regular_state_strategy import RegularStateStrategy
@@ -24,9 +22,18 @@ class TestRegularStateStrategy:
             ({"player1": {"points": 3}, "player2": {"points": 1}}, "player1", "regular", 0, 0, 1, 0, 0, 0),
             # Тест 4: Обычное добавление очка (2→3)
             ({"player1": {"points": 2}, "player2": {"points": 1}}, "player1", "regular", 3, 1, 0, 0, 0, 0),
+            # Тест 5: Переход в tie-break при счете геймов 6-6
+            (
+                    {"player1": {"points": 3, "games": 5}, "player2": {"points": 1, "games": 6}},
+                    "player1",
+                    "tie_break",
+                    0, 0,
+                    6, 6,
+                    0, 0
+            )
 
         ],
-        ids=["Deuce_3-3", "Win_Game_4-1", "Normal_Point_2→3"]
+        ids=["Deuce_3-3", "Win_Game_4-1", "Normal_Point_2→3", "TieBreak"]
     )
     def test_add_point(
             self,
