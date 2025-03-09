@@ -39,7 +39,7 @@ class Validation:
 
     @staticmethod
     def correct_page(page, total_matches, per_page):
-        last_page = math.ceil(total_matches / per_page)
+        last_page = total_matches // per_page + 1
         if page < MIN_PAGE:
             return MIN_PAGE
         elif page > last_page:

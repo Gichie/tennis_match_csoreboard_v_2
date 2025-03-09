@@ -5,6 +5,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session, joinedload
 
 from src.models.match import Match
+from src.models.player import Player
 from src.services import score_utils
 from src.services.strategies.advantage_state_strategy import AdvantageStateStrategy
 from src.services.strategies.deuce_state_strategy import DeuceStateStrategy
@@ -92,7 +93,13 @@ class MatchService:
 
         # Фильтр по имени игрока
         if player_name:
-            query = query.filter(or_(Match.player1.has(name=player_name), Match.player2.has(name=player_name)))
+            search_pattern = f'%{player_name}%'
+            query = query.filter(
+                or_(
+                    Match.player1.has(Player.name.like(search_pattern)),
+                    Match.player2.has(Player.name.like(search_pattern))
+                )
+            )
 
         # Пагинация
         total = query.count()
