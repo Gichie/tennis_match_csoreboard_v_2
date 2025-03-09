@@ -52,6 +52,11 @@ body {
     color: #333;
 }
 
+.error{
+    color: red;
+    font-weight: bold;
+}
+
 .form-group {
     margin-bottom: 1rem;
 }

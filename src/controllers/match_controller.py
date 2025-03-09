@@ -2,10 +2,11 @@ import json
 from urllib.parse import parse_qs
 
 from src.database.session import get_db
+from src.services import score_utils
 from src.services.match_service import MatchService
 from src.services.player_service import PlayerService
+from src.services.validation import Validation
 from src.views.match_view import MatchView
-from src.services import score_utils
 
 
 class MatchController:
@@ -25,8 +26,17 @@ class MatchController:
             # Парсим параметры с учетом URL-кодирования
             params = parse_qs(post_data_bytes)
 
-            player1_name = params.get('player1', [''])[0]
-            player2_name = params.get('player2', [''])[0]
+            player1_name = params.get('player1', [''])[0].strip()
+            player2_name = params.get('player2', [''])[0].strip()
+            validation_errors = Validation.player_names(player1_name, player2_name)
+            if validation_errors:
+                response_body = self.view.render_new_match_form(
+                    player1_name=player1_name,
+                    player2_name=player2_name,
+                    errors=validation_errors
+                )
+                start_response('200 OK', [('Content_Type', 'text/html')])
+                return [response_body.encode('utf-8')]
 
             with get_db() as db:
                 player1_id = PlayerService.get_player_id(db, player1_name)

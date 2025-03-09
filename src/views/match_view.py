@@ -13,9 +13,9 @@ class MatchView:
         self.env.filters['tie_break_points'] = lambda x: {0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6',
                                                           7: '7'}.get(x, f'{x}')
 
-    def render_new_match_form(self):
+    def render_new_match_form(self, player1_name='', player2_name='', errors=None):
         template = self.env.get_template('new_match.html')
-        return template.render()
+        return template.render(player1_name=player1_name, player2_name=player2_name, errors=errors or {})
 
     def render_match_score(self, context):
         template = self.env.get_template('match_score.html')
