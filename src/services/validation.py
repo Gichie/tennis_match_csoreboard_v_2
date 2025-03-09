@@ -1,7 +1,9 @@
+import math
 import re
 
 MAX_LENGTH = 254
 NAME_PATTERN = re.compile(r'^[^\W\d_]+(?:-[^\W\d_]+)*$', re.UNICODE)
+MIN_PAGE = 1
 
 
 class Validation:
@@ -34,3 +36,12 @@ class Validation:
             errors["max_length2"] = f"Длинна имени второго игрока не должна превышать {MAX_LENGTH} символов"
 
         return errors
+
+    @staticmethod
+    def correct_page(page, total_matches, per_page):
+        last_page = math.ceil(total_matches / per_page)
+        if page < MIN_PAGE:
+            return MIN_PAGE
+        elif page > last_page:
+            return last_page
+        return page

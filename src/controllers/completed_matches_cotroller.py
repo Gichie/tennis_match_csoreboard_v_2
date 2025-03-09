@@ -19,11 +19,11 @@ class CompletedMatchesController:
         player_name = query.get('filter_by_player_name', [None])[0]
 
         with get_db() as db:
-            matches, total = MatchService.get_completed_matches(db, page=page, per_page=PER_PAGE,
+            matches, total, correct_page = MatchService.get_completed_matches(db, page=page, per_page=PER_PAGE,
                                                                 player_name=player_name)
             context = {
                 "matches": self._prepare_matches_data(matches),
-                "current_page": page,
+                "current_page": correct_page,
                 "total_pages": math.ceil(total / PER_PAGE),
                 "player_name": player_name
             }

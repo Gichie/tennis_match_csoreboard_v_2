@@ -10,7 +10,7 @@ from src.services.strategies.advantage_state_strategy import AdvantageStateStrat
 from src.services.strategies.deuce_state_strategy import DeuceStateStrategy
 from src.services.strategies.regular_state_strategy import RegularStateStrategy
 from src.services.strategies.tie_break_state_strategy import TieBreakStateStrategy
-
+from src.services.validation import Validation, MIN_PAGE
 
 STATE_STRATEGY = {
     'regular': RegularStateStrategy(),
@@ -18,6 +18,8 @@ STATE_STRATEGY = {
     'tie_break': TieBreakStateStrategy(),
     'advantage': AdvantageStateStrategy()
 }
+
+PER_PAGE = 10
 
 
 class MatchService:
@@ -74,8 +76,8 @@ class MatchService:
     @staticmethod
     def get_completed_matches(
             db: Session,
-            page: int = 1,
-            per_page: int = 10,
+            page: int = MIN_PAGE,
+            per_page: int = PER_PAGE,
             player_name: str | None = None
     ) -> tuple[list[Match], int]:
         query = (
@@ -94,6 +96,7 @@ class MatchService:
 
         # Пагинация
         total = query.count()
-        matches = (query.offset((page - 1) * per_page).limit(per_page).all())
+        correct_page = Validation.correct_page(page, total, per_page)
+        matches = (query.offset((correct_page - 1) * per_page).limit(per_page).all())
 
-        return matches, total
+        return matches, total, correct_page
