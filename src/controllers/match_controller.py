@@ -4,7 +4,7 @@ from urllib.parse import parse_qs
 from src.database.session import get_db
 from src.services import score_utils
 from src.services.exceptions import NotFoundMatchError, InvalidGameStateError, PlayerNumberError, InvalidScoreError, \
-    DatabaseError
+    DatabaseError, PlayerNotFound
 from src.services.match_service import MatchService
 from src.services.player_service import PlayerService
 from src.services.validation import Validation
@@ -57,7 +57,7 @@ class MatchController:
                 start_response('302 Found', headers)
                 return [b'Redirecting...']
         except DatabaseError as e:
-            return self._handle_error(start_response, e, new_match.uuid, status='500 Internal Server Error')
+            return self._handle_error(start_response, e, status='500 Internal Server Error')
         except Exception as e:
             return self._handle_error(start_response, e, new_match.uuid, status='500 Internal Server Error')
 
@@ -128,40 +128,46 @@ class MatchController:
         return [response_body.encode('utf-8')]
 
     def _render_score_page(self, start_response, match, score):
-        with get_db() as db:
-            context = {
-                "uuid": match.uuid,
-                "player1": PlayerService.get_name(db, match.player1_id),
-                "player2": PlayerService.get_name(db, match.player2_id),
-                "player1_points": score["player1"]["points"],
-                "player1_games": score["player1"]["games"],
-                "player1_sets": score["player1"]["sets"],
-                "player2_points": score["player2"]["points"],
-                "player2_games": score["player2"]["games"],
-                "player2_sets": score["player2"]["sets"],
-                "finished": False,
-                "current_game_state": match.current_game_state
-            }
+        try:
+            with get_db() as db:
+                context = {
+                    "uuid": match.uuid,
+                    "player1": PlayerService.get_name(db, match.player1_id),
+                    "player2": PlayerService.get_name(db, match.player2_id),
+                    "player1_points": score["player1"]["points"],
+                    "player1_games": score["player1"]["games"],
+                    "player1_sets": score["player1"]["sets"],
+                    "player2_points": score["player2"]["points"],
+                    "player2_games": score["player2"]["games"],
+                    "player2_sets": score["player2"]["sets"],
+                    "finished": False,
+                    "current_game_state": match.current_game_state
+                }
 
-            response_body = self.view.render_match_score(context)
-            headers = [('Content-Type', 'text/html; charset=utf-8')]
-            start_response('200 OK', headers)
-            return [response_body.encode('utf-8')]  # Обязательное кодирование
+                response_body = self.view.render_match_score(context)
+                headers = [('Content-Type', 'text/html; charset=utf-8')]
+                start_response('200 OK', headers)
+                return [response_body.encode('utf-8')]  # Обязательное кодирование
+        except PlayerNotFound as e:
+            return self._handle_error(start_response, e, match.uuid, status='404 Not Found')
+        except Exception as e:
+            return self._handle_error(start_response, e, match.uuid, status='500 Internal Server Error')
 
     def _render_final_score(self, start_response, match):
-        with get_db() as db:
-            context = {
-                "player1": PlayerService.get_name(db, match.player1_id),
-                "player2": PlayerService.get_name(db, match.player2_id),
-                "winner": PlayerService.get_name(db, match.winner_id),
-                "player1_sets": json.loads(match.score)["player1"]["sets"],
-                "player2_sets": json.loads(match.score)["player2"]["sets"],
-            }
-            response_body = self.view.render_final_score(context)
-            headers = [('Content-Type', 'text/html; charset=utf-8')]
-            start_response('200 OK', headers)
-            return [response_body.encode('utf-8')]
-
-    def _bad_request(self, start_response):
-        start_response('400 Bad Request', [('Content-Type', 'text/plain')])
-        return [b'Invalid request']
+        try:
+            with get_db() as db:
+                context = {
+                    "player1": PlayerService.get_name(db, match.player1_id),
+                    "player2": PlayerService.get_name(db, match.player2_id),
+                    "winner": PlayerService.get_name(db, match.winner_id),
+                    "player1_sets": json.loads(match.score)["player1"]["sets"],
+                    "player2_sets": json.loads(match.score)["player2"]["sets"],
+                }
+                response_body = self.view.render_final_score(context)
+                headers = [('Content-Type', 'text/html; charset=utf-8')]
+                start_response('200 OK', headers)
+                return [response_body.encode('utf-8')]
+        except PlayerNotFound as e:
+            return self._handle_error(start_response, e, match.uuid, status='404 Not Found')
+        except Exception as e:
+            return self._handle_error(start_response, e, match.uuid, status='500 Internal Server Error')

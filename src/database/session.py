@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from src.config import DATABASE_URI
 
 # Настройка подключения к базе данных
-engine = create_engine(DATABASE_URI, echo=False)
+engine = create_engine(DATABASE_URI, echo=True)
 
 # Создание фабрики сессий
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
