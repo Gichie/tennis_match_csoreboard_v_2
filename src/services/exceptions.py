@@ -16,3 +16,7 @@ class PlayerNumberError(Exception):
 
 class InvalidScoreError(Exception):
     """Raised when score data is corrupted"""
+
+
+class DatabaseError(Exception):
+    """Raised when database operation failed"""

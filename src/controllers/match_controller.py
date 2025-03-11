@@ -3,7 +3,8 @@ from urllib.parse import parse_qs
 
 from src.database.session import get_db
 from src.services import score_utils
-from src.services.exceptions import NotFoundMatchError, InvalidGameStateError, PlayerNumberError, InvalidScoreError
+from src.services.exceptions import NotFoundMatchError, InvalidGameStateError, PlayerNumberError, InvalidScoreError, \
+    DatabaseError
 from src.services.match_service import MatchService
 from src.services.player_service import PlayerService
 from src.services.validation import Validation
@@ -55,6 +56,8 @@ class MatchController:
                 ]
                 start_response('302 Found', headers)
                 return [b'Redirecting...']
+        except DatabaseError as e:
+            return self._handle_error(start_response, e, new_match.uuid, status='500 Internal Server Error')
         except Exception as e:
             return self._handle_error(start_response, e, new_match.uuid, status='500 Internal Server Error')
 

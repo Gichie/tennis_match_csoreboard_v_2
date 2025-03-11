@@ -2,12 +2,13 @@ import json
 import uuid
 
 from sqlalchemy import or_
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
 
 from src.models.match import Match
 from src.models.player import Player
 from src.services import score_utils
-from src.services.exceptions import InvalidGameStateError, NotFoundMatchError, PlayerNumberError
+from src.services.exceptions import InvalidGameStateError, NotFoundMatchError, PlayerNumberError, DatabaseError
 from src.services.strategies.advantage_state_strategy import AdvantageStateStrategy
 from src.services.strategies.deuce_state_strategy import DeuceStateStrategy
 from src.services.strategies.regular_state_strategy import RegularStateStrategy
@@ -27,15 +28,18 @@ PER_PAGE = 10
 class MatchService:
     @staticmethod
     def create_match(db: Session, player1_id: int, player2_id: int) -> Match:
-        new_match = Match(
-            uuid=str(uuid.uuid4()),
-            player1_id=player1_id,
-            player2_id=player2_id
-        )
-        db.add(new_match)
-        db.commit()
-        db.refresh(new_match)
-        return new_match
+        try:
+            new_match = Match(
+                uuid=str(uuid.uuid4()),
+                player1_id=player1_id,
+                player2_id=player2_id
+            )
+            db.add(new_match)
+            db.commit()
+            db.refresh(new_match)
+            return new_match
+        except SQLAlchemyError as e:
+            raise DatabaseError("Failed to create match") from e
 
     @staticmethod
     def add_point(db: Session, match: Match, score: dict, player_num: int) -> None:
