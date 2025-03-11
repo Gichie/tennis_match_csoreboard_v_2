@@ -1,7 +1,6 @@
-import math
 import re
 
-MAX_LENGTH = 254
+MAX_LENGTH = 128
 NAME_PATTERN = re.compile(r'^[^\W\d_]+(?:-[^\W\d_]+)*$', re.UNICODE)
 MIN_PAGE = 1
 

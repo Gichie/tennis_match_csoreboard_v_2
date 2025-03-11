@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, joinedload
 from src.models.match import Match
 from src.models.player import Player
 from src.services import score_utils
+from src.services.exceptions import InvalidGameStateError, NotFoundMatchError, PlayerNumberError
 from src.services.strategies.advantage_state_strategy import AdvantageStateStrategy
 from src.services.strategies.deuce_state_strategy import DeuceStateStrategy
 from src.services.strategies.regular_state_strategy import RegularStateStrategy
@@ -17,7 +18,7 @@ STATE_STRATEGY = {
     'regular': RegularStateStrategy(),
     'deuce': DeuceStateStrategy(),
     'tie_break': TieBreakStateStrategy(),
-    'advantage': AdvantageStateStrategy()
+    'advantage': AdvantageStateStrategy(),
 }
 
 PER_PAGE = 10
@@ -55,7 +56,7 @@ class MatchService:
                 player_num
             )
         else:
-            raise ValueError(f"Неизвестное состояние игры: {match.current_game_state}")
+            raise InvalidGameStateError(f"Unknown game state: {match.current_game_state}")
 
         if score_utils.is_set_finished(score, player_key, opponent_key):
             score_utils.reset_set(score, player_key)
@@ -72,7 +73,10 @@ class MatchService:
 
     @staticmethod
     def get_match_by_uuid(db: Session, uuid: str) -> Match:
-        return db.query(Match).filter(Match.uuid == uuid).first()
+        match = db.query(Match).filter(Match.uuid == uuid).first()
+        if match:
+            return match
+        raise NotFoundMatchError(uuid)
 
     @staticmethod
     def get_completed_matches(
@@ -107,3 +111,12 @@ class MatchService:
         matches = (query.offset((correct_page - 1) * per_page).limit(per_page).all())
 
         return matches, total, correct_page
+
+    @staticmethod
+    def determine_player_number(params: dict):
+        if 'player1_point' in params:
+            return 1
+        elif 'player2_point' in params:
+            return 2
+        else:
+            raise PlayerNumberError("Player number must be 1 or 2")

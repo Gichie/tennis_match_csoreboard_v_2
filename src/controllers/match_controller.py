@@ -3,6 +3,7 @@ from urllib.parse import parse_qs
 
 from src.database.session import get_db
 from src.services import score_utils
+from src.services.exceptions import NotFoundMatchError, InvalidGameStateError, PlayerNumberError, InvalidScoreError
 from src.services.match_service import MatchService
 from src.services.player_service import PlayerService
 from src.services.validation import Validation
@@ -35,12 +36,12 @@ class MatchController:
                     player2_name=player2_name,
                     errors=validation_errors
                 )
-                start_response('200 OK', [('Content_Type', 'text/html')])
+                start_response('200 OK', [('Content-Type', 'text/html')])
                 return [response_body.encode('utf-8')]
 
             with get_db() as db:
-                player1_id = PlayerService.get_player_id(db, player1_name)
-                player2_id = PlayerService.get_player_id(db, player2_name)
+                player1_id = PlayerService.get_or_create_player_id(db, player1_name)
+                player2_id = PlayerService.get_or_create_player_id(db, player2_name)
                 new_match = MatchService.create_match(db, player1_id, player2_id)
 
                 db.add(new_match)
@@ -55,26 +56,36 @@ class MatchController:
                 start_response('302 Found', headers)
                 return [b'Redirecting...']
         except Exception as e:
-            # Обработка ошибок
-            start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
-            return [b'Internal Server Error']
+            return self._handle_error(start_response, e, new_match.uuid, status='500 Internal Server Error')
 
     def match_score(self, environ, start_response):
         # Получаем UUID из параметров запроса
         query = parse_qs(environ.get('QUERY_STRING', ''))
         match_uuid = query.get('uuid', [''])[0]
 
-        with get_db() as db:
-            match = MatchService.get_match_by_uuid(db, match_uuid)
-            score = json.loads(match.score)
+        try:
+            with get_db() as db:
+                match = MatchService.get_match_by_uuid(db, match_uuid)
 
-            if not match:
-                return self._not_found(start_response)
+                try:
+                    score = json.loads(match.score)
+                except json.JSONDecodeError:
+                    raise InvalidScoreError("Score data is corrupted")
 
-            if environ['REQUEST_METHOD'] == 'POST':
-                return self._handle_score_update(environ, start_response, match, score, db)
+                if environ['REQUEST_METHOD'] == 'POST':
+                    return self._handle_score_update(environ, start_response, match, score, db)
 
-            return self._render_score_page(start_response, match, score)
+                return self._render_score_page(start_response, match, score)
+
+        except NotFoundMatchError as e:
+            start_response('404 Not Found', [('Content-Type', 'text/plain')])
+            return [str(e).encode('utf-8')]
+
+        except InvalidScoreError as e:
+            return self._handle_error(start_response, e, match.uuid, status='400 Bad Request')
+
+        except Exception as e:
+            return self._handle_error(start_response, e, match.uuid, status='500 Internal Server Error')
 
     def _handle_score_update(self, environ, start_response, match, score, db):
         try:
@@ -83,13 +94,7 @@ class MatchController:
             params = parse_qs(post_data)
 
             # Определяем, какой игрок получил очко
-            if 'player1_point' in params:
-                player_num = 1
-            elif 'player2_point' in params:
-                player_num = 2
-            else:
-                return self._bad_request(start_response)
-
+            player_num = MatchService.determine_player_number(params)
             # Обновляем счёт
             MatchService.add_point(db, match, score, player_num)
 
@@ -99,9 +104,25 @@ class MatchController:
 
             return self._render_score_page(start_response, match, score)
 
+        except (InvalidGameStateError, PlayerNumberError) as e:
+            return self._handle_error(start_response, e, match.uuid, status='400 Bad Request')
+
         except Exception as e:
-            start_response('500 Internal Server Error', [('Content-Type', 'text/plain')])
-            return [b'Error processing request']
+            return self._handle_error(start_response, e, match.uuid, status='500 Internal Server Error')
+
+    def _handle_error(self, start_response, exception, match_uuid=None, status='500 Internal Server Error'):
+        error_message = str(exception)
+        error_title = type(exception).__name__
+
+        response_body = self.view.render_error_page({
+            "error_title": error_title,
+            "error_message": error_message,
+            "match_uuid": match_uuid
+        })
+
+        headers = [('Content-Type', 'text/html; charset=utf-8')]
+        start_response(status, headers)
+        return [response_body.encode('utf-8')]
 
     def _render_score_page(self, start_response, match, score):
         with get_db() as db:
@@ -137,10 +158,6 @@ class MatchController:
             headers = [('Content-Type', 'text/html; charset=utf-8')]
             start_response('200 OK', headers)
             return [response_body.encode('utf-8')]
-
-    def _not_found(self, start_response):
-        start_response('404 Not Found', [('Content-Type', 'text/plain')])
-        return [b'Match not found']
 
     def _bad_request(self, start_response):
         start_response('400 Bad Request', [('Content-Type', 'text/plain')])

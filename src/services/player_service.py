@@ -15,19 +15,7 @@ class PlayerService:
         return player
 
     @staticmethod
-    def get_player_id(db: Session, name: str) -> int:
-        try:
-            # Проверяем валидность имени
-            if not name or not isinstance(name, str):
-                raise ValueError("Invalid player name")
-        except SQLAlchemyError as e:
-            db.rollback()
-            logger.error(f"Error: {str(e)}")
-            raise
-        except Exception as e:
-            logger.error(f"Error: {str(e)}")
-            raise
-
+    def get_or_create_player_id(db: Session, name: str) -> int:
         player = db.query(Player).filter(Player.name.ilike(name)).first()
         if not player:
             player = PlayerService.create_player(name)

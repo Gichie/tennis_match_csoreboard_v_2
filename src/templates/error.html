@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Ошибка{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ error_title }}</h1>
+    <div class="error-message">
+        <p>{{ error_message }}</p>
+    </div>
+    <div class="actions">
+        <a href="/match-score?uuid={{ match_uuid }}" class="btn">Вернуться к матчу</a>
+        <a href="/" class="btn">На главную</a>
+    </div>
+</div>
+{% endblock %}
