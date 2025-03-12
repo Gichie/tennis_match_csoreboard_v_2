@@ -5,3 +5,7 @@ structure.txt
 .venv
 
 .idea
+
+app.log
+logs/
+*.log

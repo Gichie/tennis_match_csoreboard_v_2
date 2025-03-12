@@ -4,10 +4,8 @@ from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from src.config import DATABASE_URI
+from src.config.config import DATABASE_URI
 from src.models.base import Base
-from src.models.match import Match
-from src.models.player import Player
 
 config = context.config
 
