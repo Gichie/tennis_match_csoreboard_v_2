@@ -26,6 +26,7 @@ class PlayerService:
                 db.refresh(player)
             return player.id
         except SQLAlchemyError as e:
+            logger.error('Failed to get or create player id')
             raise DatabaseError('Failed to get or create player id')
 
     @staticmethod
@@ -34,4 +35,5 @@ class PlayerService:
         if player:
             return player.name
         else:
+            logger.error("Error getting name")
             raise PlayerNotFound(player_id)
