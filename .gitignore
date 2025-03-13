@@ -10,8 +10,4 @@ app.log
 logs/
 *.log
 
-/src/my-package.egg-info/
-/src/my_package.egg-info/PKG-INFO
-/src/my_package.egg-info/top_level.txt
-/src/my_package.egg-info/dependency_links.txt
-/src/my_package.egg-info/SOURCES.txt
+/src/my_package.egg-info/
