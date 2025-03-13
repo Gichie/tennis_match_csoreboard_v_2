@@ -17,72 +17,28 @@
             <div class="scoreboard">
                 <h2>Current score:</h2>
                 {% if not finished %}
-                <form method="POST" enctype="application/x-www-form-urlencoded">
+                    <form method="POST" enctype="application/x-www-form-urlencoded">
                 {% endif %}
-                    <div class="scoreboard-content">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Player</th>
-                                    <th>Sets</th>
-                                    <th>Games</th>
-                                    <th>Points</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{{ player1|default('Player 1') }}</td>
-                                    <td>{{ player1_sets|default(666) }}</td>
-                                    <td>{{ player1_games|default(666) }}</td>
-                                    <td>
-                                        {% if current_game_state == 'advantage_1' %}
-                                            A
-                                        {% elif current_game_state == 'tie_break'%}
-                                            {{ player1_points|default(666)|tie_break_points }}
-                                        {% else %}
-                                            {{ player1_points|default(666)|tennis_points }}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if not finished %}
-                                        <div class="score-buttons">
-                                            <button type="submit" name="player1_point" value="1" class="btn player1">
-                                                {{ player1|default('Player 1') }} won a point
-                                            </button>
-                                        </div>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>{{ player2|default('Player 2') }}</td>
-                                    <td>{{ player2_sets|default(666) }}</td>
-                                    <td>{{ player2_games|default(666) }}</td>
-                                    <td>
-                                        {% if current_game_state == 'advantage_2' %}
-                                            A
-                                        {% elif current_game_state == 'tie_break'%}
-                                            {{ player2_points|default(666)|tie_break_points }}
-                                        {% else %}
-                                            {{ player2_points|default(666)|tennis_points }}
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if not finished %}
-                                        <div class="score-buttons">
-                                            <button type="submit" name="player2_point" value="1" class="btn player2">
-                                                {{ player2|default('Player 2') }} won a point
-                                            </button>
-                                        </div>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="scoreboard-content">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Sets</th>
+                            <th>Games</th>
+                            <th>Points</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ player_row(player1, player1_sets, player1_games, player1_points, '1', current_game_state) }}
+                        {{ player_row(player2, player2_sets, player2_games, player2_points, '2', current_game_state) }}
+                        </tbody>
+                    </table>
 
-                    </div>
+                </div>
                 {% if not finished %}
-                </form>
+                    </form>
                 {% endif %}
             </div>
 
@@ -93,3 +49,30 @@
 
     </div>
 {% endblock %}
+
+
+{% macro player_row(player, sets, games, points, player_num, current_game_state) %}
+    <tr>
+        <td>{{ player|default('N/A') }}</td>
+        <td>{{ sets|default('N/A') }}</td>
+        <td>{{ games|default('N/A') }}</td>
+        <td>
+            {% if current_game_state == 'advantage_' + player_num %}
+                A
+            {% elif current_game_state == 'tie_break' %}
+                {{ points|default(666)|tie_break_points }}
+            {% else %}
+                {{ points|default(666)|tennis_points }}
+            {% endif %}
+        </td>
+        <td>
+            {% if not finished %}
+                <div class="score-buttons">
+                    <button type="submit" name="player{{ player_num }}_point" value="1" class="btn player{{ player_num }}">
+                        {{ player|default('N/A') }} won a point
+                    </button>
+                </div>
+            {% endif %}
+        </td>
+    </tr>
+{% endmacro %}
