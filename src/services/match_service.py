@@ -1,4 +1,5 @@
 import json
+import logging
 import uuid
 
 from sqlalchemy import or_
@@ -15,6 +16,7 @@ from src.services.strategies.regular_state_strategy import RegularStateStrategy
 from src.services.strategies.tie_break_state_strategy import TieBreakStateStrategy
 from src.services.validation import Validation, MIN_PAGE
 
+logger = logging.getLogger(__name__)
 STATE_STRATEGY = {
     'regular': RegularStateStrategy(),
     'deuce': DeuceStateStrategy(),
@@ -37,8 +39,10 @@ class MatchService:
             db.add(new_match)
             db.commit()
             db.refresh(new_match)
+            logger.info(f"Match created successfully with UUID: {new_match.uuid}")
             return new_match
         except SQLAlchemyError as e:
+            logger.error("Database error during match creation", exc_info=True)
             raise DatabaseError("Failed to create match") from e
 
     @staticmethod
@@ -63,7 +67,7 @@ class MatchService:
             raise InvalidGameStateError(f"Unknown game state: {match.current_game_state}")
 
         if score_utils.is_set_finished(score, player_key, opponent_key):
-            score_utils.reset_set(score, player_key)
+            score_utils.reset_set(match, score, player_key)
 
         if score_utils.is_match_finished(score):
             if player_num == 1:
@@ -112,9 +116,12 @@ class MatchService:
         # Пагинация
         total = query.count()
         correct_page = Validation.correct_page(page, total, per_page)
-        matches = (query.offset((correct_page - 1) * per_page).limit(per_page).all())
-
-        return matches, total, correct_page
+        try:
+            matches = (query.offset((correct_page - 1) * per_page).limit(per_page).all())
+            return matches, total, correct_page
+        except SQLAlchemyError as e:
+            logger.error("Database error during getting list of completed matches", exc_info=True)
+            raise DatabaseError("Failed to get completed matches") from e
 
     @staticmethod
     def determine_player_number(params: dict):

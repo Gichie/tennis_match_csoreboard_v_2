@@ -1,19 +1,34 @@
 import logging
+import os
+from logging.handlers import RotatingFileHandler
 
 
-def setup_logger(name):
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+def setup_logger():
+    log_format = '%(asctime)s - %(levelname)s - %(message)s'
+    # Настройка базового логгирования
+    logging.basicConfig(level=logging.INFO, format=log_format)
 
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.INFO)
-    stream_handler.setFormatter(formatter)
-    logger.addHandler(stream_handler)
+    # Настройка файлового обработчика с ротацией
+    # Задает название директории, в которой будут храниться логи
+    log_dir = 'logs'
 
-    file_handler = logging.FileHandler('app.log')
+    '''Создает указанную директорию (и все промежуточные директории, если необходимо). 
+    Параметр exist_ok=True означает, что если директория уже существует, код не выбросит ошибку.'''
+    os.makedirs(log_dir, exist_ok=True)
+
+    # Формирует полный путь к файлу с логами, объединяя название директории и имя файла
+    log_file = os.path.join(log_dir, 'app.log')
+
+    file_handler = RotatingFileHandler(log_file, maxBytes=512 * 512 * 4, backupCount=2)
     file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
+    file_handler.setFormatter(logging.Formatter(log_format))
 
-    return logger
+    # Добавление файлового обработчика к корневому логгеру
+    logging.getLogger().addHandler(file_handler)
+    # Установка уровня для корневого логгера
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    root_logger.propagate = True
+
+
+

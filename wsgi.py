@@ -1,11 +1,14 @@
+import logging
 import os
 
 from whitenoise import WhiteNoise
 
+from src.controllers.completed_matches_cotroller import CompletedMatchesController
 from src.controllers.home_controller import HomeController
 from src.controllers.match_controller import MatchController
-from src.controllers.completed_matches_cotroller import CompletedMatchesController
 
+
+logger = logging.getLogger(__name__)
 
 home_controller = HomeController()
 match_controller = MatchController()
@@ -30,14 +33,17 @@ def application(environ, start_response):
     try:
         path = environ.get('PATH_INFO', '')
         method = environ.get('REQUEST_METHOD', 'GET').upper()
+        logger.info(f"Received request: {method} {path}")
 
         handler = routes.get(method, {}).get(path)
         if handler:
             return handler(environ, start_response)
         else:
+            logger.warning(f"404 Not Found: {method} {path}")
             start_response("404 Not Found", [("Content-Type", "text/plain")])
             return [b"404 Not Found"]
     except Exception as e:
+        logger.error(f"500 Internal Server Error", exc_info=True)
         start_response("500 Internal Server Error", [("Content-Type", "text/plain")])
         return [f"Error: {str(e)}".encode("utf-8")]
 
