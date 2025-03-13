@@ -5,7 +5,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
 from src.config.config import DATABASE_URI
+from src.config.log_config import setup_logger
 
+setup_logger()
 logger = logging.getLogger(__name__)
 
 # Настройка подключения к базе данных

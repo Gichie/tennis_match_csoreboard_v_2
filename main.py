@@ -2,11 +2,6 @@ import logging
 
 from waitress import serve
 
-from src.config.log_config import setup_logger
-
-# Настройка логгирования ДО любых других импортов
-setup_logger()
-
 from wsgi import app_with_static
 
 logger = logging.getLogger(__name__)

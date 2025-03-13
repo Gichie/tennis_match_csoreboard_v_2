@@ -7,7 +7,6 @@ from src.controllers.completed_matches_cotroller import CompletedMatchesControll
 from src.controllers.home_controller import HomeController
 from src.controllers.match_controller import MatchController
 
-
 logger = logging.getLogger(__name__)
 
 home_controller = HomeController()

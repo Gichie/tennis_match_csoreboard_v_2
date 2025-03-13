@@ -29,6 +29,3 @@ def setup_logger():
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO)
     root_logger.propagate = True
-
-
-
