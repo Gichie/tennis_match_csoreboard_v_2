@@ -1,5 +1,5 @@
 structure.txt
-
+__pycache__/
 .env
 
 .venv
@@ -9,3 +9,5 @@ structure.txt
 app.log
 logs/
 *.log
+
+my-package.egg-info/

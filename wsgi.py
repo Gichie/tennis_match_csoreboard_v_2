@@ -3,7 +3,7 @@ import os
 
 from whitenoise import WhiteNoise
 
-from controllers.completed_matches_cotroller import CompletedMatchesController
+from controllers.completed_matches_controller import CompletedMatchesController
 from controllers.home_controller import HomeController
 from controllers.match_controller import MatchController
 
