@@ -1,12 +1,12 @@
 import logging
-import math
+from math import ceil
 from urllib.parse import parse_qs
 
-from src.controllers.base_controller import BaseController
-from src.database.session import get_db
-from src.services.exceptions import DatabaseError
-from src.services.match_service import MatchService
-from src.views.completed_matches_view import CompletedMatchesView
+from controllers.base_controller import BaseController
+from database.session import get_db
+from services.exceptions import DatabaseError
+from services.match_service import MatchService
+from views.completed_matches_view import CompletedMatchesView
 
 logger = logging.getLogger(__name__)
 PER_PAGE = 10  # Количество матчей на странице
@@ -33,7 +33,7 @@ class CompletedMatchesController(BaseController):
                 context = {
                     "matches": self._prepare_matches_data(matches),
                     "current_page": correct_page,
-                    "total_pages": math.ceil(total / PER_PAGE),
+                    "total_pages": ceil(total / PER_PAGE),
                     "player_name": player_name
                 }
 

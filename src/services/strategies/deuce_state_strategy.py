@@ -1,5 +1,5 @@
-from src.models.match import Match
-from src.services.strategies.game_state_strategy import GameStateStrategy
+from models.match import Match
+from services.strategies.game_state_strategy import GameStateStrategy
 
 
 class DeuceStateStrategy(GameStateStrategy):

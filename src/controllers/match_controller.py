@@ -2,14 +2,20 @@ import json
 import logging
 from urllib.parse import parse_qs
 
-from src.controllers.base_controller import BaseController
-from src.database.session import get_db
-from src.services import score_utils
-from src.services.exceptions import NotFoundMatchError, InvalidGameStateError, PlayerNumberError, InvalidScoreError, \
-    DatabaseError, PlayerNotFound
-from src.services.match_service import MatchService
-from src.services.player_service import PlayerService
-from src.services.validation import Validation
+from controllers.base_controller import BaseController
+from database.session import get_db
+from services import score_utils
+from services.exceptions import (
+    NotFoundMatchError,
+    InvalidGameStateError,
+    PlayerNumberError,
+    InvalidScoreError,
+    DatabaseError,
+    PlayerNotFound
+)
+from services.match_service import MatchService
+from services.player_service import PlayerService
+from services.validation import Validation
 
 logger = logging.getLogger(__name__)
 

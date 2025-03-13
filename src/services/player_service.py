@@ -3,8 +3,8 @@ import logging
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from src.models.player import Player
-from src.services.exceptions import DatabaseError, PlayerNotFound
+from models.player import Player
+from services.exceptions import DatabaseError, PlayerNotFound
 
 logger = logging.getLogger(__name__)
 

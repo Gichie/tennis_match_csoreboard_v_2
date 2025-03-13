@@ -1,6 +1,6 @@
 import pytest
 
-from src.services.strategies.tie_break_state_strategy import TieBreakStateStrategy
+from services.strategies.tie_break_state_strategy import TieBreakStateStrategy
 from tests.conftest import setup_score
 
 

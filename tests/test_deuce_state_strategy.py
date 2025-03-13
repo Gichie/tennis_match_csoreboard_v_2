@@ -1,6 +1,6 @@
 import pytest
 
-from src.services.strategies.deuce_state_strategy import DeuceStateStrategy
+from services.strategies.deuce_state_strategy import DeuceStateStrategy
 from tests.conftest import setup_score
 
 

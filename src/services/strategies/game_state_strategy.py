@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.models.match import Match
+from models.match import Match
 
 
 class GameStateStrategy(ABC):

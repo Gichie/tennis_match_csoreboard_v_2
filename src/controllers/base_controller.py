@@ -1,4 +1,4 @@
-from src.views.match_view import MatchView
+from views.match_view import MatchView
 
 
 class BaseController:

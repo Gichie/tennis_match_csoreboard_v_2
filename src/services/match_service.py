@@ -6,15 +6,15 @@ from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
 
-from src.models.match import Match
-from src.models.player import Player
-from src.services import score_utils
-from src.services.exceptions import InvalidGameStateError, NotFoundMatchError, PlayerNumberError, DatabaseError
-from src.services.strategies.advantage_state_strategy import AdvantageStateStrategy
-from src.services.strategies.deuce_state_strategy import DeuceStateStrategy
-from src.services.strategies.regular_state_strategy import RegularStateStrategy
-from src.services.strategies.tie_break_state_strategy import TieBreakStateStrategy
-from src.services.validation import Validation, MIN_PAGE
+from models.match import Match
+from models.player import Player
+from services import score_utils
+from services.exceptions import InvalidGameStateError, NotFoundMatchError, PlayerNumberError, DatabaseError
+from services.strategies.advantage_state_strategy import AdvantageStateStrategy
+from services.strategies.deuce_state_strategy import DeuceStateStrategy
+from services.strategies.regular_state_strategy import RegularStateStrategy
+from services.strategies.tie_break_state_strategy import TieBreakStateStrategy
+from services.validation import Validation, MIN_PAGE
 
 logger = logging.getLogger(__name__)
 STATE_STRATEGY = {

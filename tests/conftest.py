@@ -3,7 +3,7 @@ import uuid
 
 import pytest
 
-from src.models.match import Match
+from models.match import Match
 
 
 @pytest.fixture

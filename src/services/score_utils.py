@@ -1,4 +1,4 @@
-from src.models.match import Match
+from models.match import Match
 
 SCORE_DIFF = 2
 MIN_GAMES = 6

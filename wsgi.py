@@ -3,9 +3,9 @@ import os
 
 from whitenoise import WhiteNoise
 
-from src.controllers.completed_matches_cotroller import CompletedMatchesController
-from src.controllers.home_controller import HomeController
-from src.controllers.match_controller import MatchController
+from controllers.completed_matches_cotroller import CompletedMatchesController
+from controllers.home_controller import HomeController
+from controllers.match_controller import MatchController
 
 logger = logging.getLogger(__name__)
 

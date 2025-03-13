@@ -1,6 +1,6 @@
-from src.models.match import Match
-from src.services.score_utils import process_tie_break
-from src.services.strategies.game_state_strategy import GameStateStrategy
+from models.match import Match
+from services.score_utils import process_tie_break
+from services.strategies.game_state_strategy import GameStateStrategy
 
 
 class TieBreakStateStrategy(GameStateStrategy):

@@ -1,6 +1,6 @@
 import pytest
 
-from src.services.strategies.regular_state_strategy import RegularStateStrategy
+from services.strategies.regular_state_strategy import RegularStateStrategy
 from tests.conftest import setup_score
 
 

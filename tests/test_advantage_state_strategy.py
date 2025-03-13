@@ -1,6 +1,6 @@
 import pytest
 
-from src.services.strategies.advantage_state_strategy import AdvantageStateStrategy
+from services.strategies.advantage_state_strategy import AdvantageStateStrategy
 from tests.conftest import setup_score
 
 
