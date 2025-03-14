@@ -3,14 +3,14 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "my_package"
+name = "tennis_score_app"
 version = "0.1.0"
 authors = [
-    {name = "Ваше Имя", email = "your.email@example.com"},
+    { name = "Gichie", email = "kksenys@gmail.com" },
 ]
-description = "Краткое описание пакета"
+description = "A simple tennis score tracking application."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -18,11 +18,11 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/yourusername/my_package"
-"Bug Tracker" = "https://github.com/yourusername/my_package/issues"
+"Homepage" = "https://github.com/Gichie/tennis_match_csoreboard_v_2"
+"Bug Tracker" = "https://github.com/Gichie/tennis_match_csoreboard_v_2/issues"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]

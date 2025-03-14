@@ -117,7 +117,7 @@ class MatchController(BaseController):
                 return self._render_score_page(start_response, match, score)
 
         except NotFoundMatchError as e:
-            logger.warning(f'Match not found {match.uuid}')
+            logger.warning(f'Match not found')
             start_response('404 Not Found', [('Content-Type', 'text/plain')])
             return [str(e).encode('utf-8')]
         except InvalidScoreError as e:
