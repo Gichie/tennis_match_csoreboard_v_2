@@ -1,11 +1,27 @@
+"""
+Module containing the Home Controller for rendering the main page.
+"""
+from typing import Callable
+
 from views.home_view import HomeView
 
 
 class HomeController:
+    """
+    Controller for managing the home page.
+    """
+
     def __init__(self):
         self.view = HomeView()
 
-    def index(self, environ, start_response):
+    def index(self, environ: dict, start_response: Callable[[str, list[tuple[str, str]]], None]) -> list[bytes]:
+        """
+        Handle incoming HTTP requests for the home page.
+
+        :param environ: WSGI environment dictionary containing request data
+        :param start_response: WSGI response starter function
+        :return: Encoded HTML content of the home page
+        """
         response_body = self.view.render_home()
         status = '200 OK'
         headers = [('Content-Type', 'text/html')]

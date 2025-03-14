@@ -1,6 +1,7 @@
 class NotFoundMatchError(Exception):
     """Raised when a match is not found"""
-    def __init__(self, match_uuid, message="Match not found"):
+
+    def __init__(self, match_uuid: str, message: str = "Match not found"):
         self.match_uuid = match_uuid
         self.message = f"{message}: {match_uuid}"
         super().__init__(self.message)
@@ -16,6 +17,7 @@ class PlayerNumberError(Exception):
 
 class PlayerNotFound(Exception):
     """Raised when the player is not found in the database."""
+
     def __init__(self, player_id: int):
         super().__init__(f"Player with ID {player_id} not found")
 

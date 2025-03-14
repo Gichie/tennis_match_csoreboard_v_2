@@ -28,7 +28,14 @@ routes = {
 }
 
 
-def application(environ, start_response):
+def application(environ: dict, start_response) -> list[bytes]:
+    """
+    WSGI application that handles routing and request processing.
+
+    :param environ: A dictionary containing the WSGI environment variables.
+    :param start_response: A callable used to begin the HTTP response.
+    :return: A list of bytes representing the response body.
+    """
     try:
         path = environ.get('PATH_INFO', '')
         method = environ.get('REQUEST_METHOD', 'GET').upper()
@@ -47,6 +54,6 @@ def application(environ, start_response):
         return [f"Error: {str(e)}".encode("utf-8")]
 
 
-# Путь к статическим файлам
+# Path to static files
 static_path = os.path.join(os.path.dirname(__file__), 'src/static')
 app_with_static = WhiteNoise(application, root=static_path, prefix='/static')

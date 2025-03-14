@@ -1,43 +1,63 @@
 import re
 
-MAX_LENGTH = 128
+MAX_LENGTH = 64
 NAME_PATTERN = re.compile(r'^[^\W\d_]+(?:-[^\W\d_]+)*$', re.UNICODE)
 MIN_PAGE = 1
 
 
 class Validation:
+    """
+    A class containing static methods for validating player names and page numbers.
+    """
+
     @staticmethod
     def player_names(player1_name: str, player2_name: str) -> dict:
+        """
+        Validates player names to ensure they meet specific criteria.
+
+        :param player1_name: The name of the first player.
+        :param player2_name: The name of the second player.
+        :return: A dictionary containing error messages if validation fails.
+                 Returns an empty dictionary if both names are valid.
+        """
         errors = {}
 
         player_name1 = player1_name.lower()
         player_name2 = player2_name.lower()
 
         if not player_name1:
-            errors["player1"] = "Имя первого игрока не может быть пустым"
+            errors["player1"] = "The first player name cannot be empty."
         if not player_name2:
-            errors["player2"] = "Имя второго игрока не может быть пустым"
+            errors["player2"] = "The second player name cannot be empty."
 
         if player_name1 == player_name2:
-            errors["duplicate"] = "Имена игроков должны быть разными"
+            errors["duplicate"] = "Player names must be different"
 
         def is_valid_name(name):
             return all(NAME_PATTERN.match(word) for word in name.split())
 
         if not is_valid_name(player_name1):
-            errors["letters1"] = "Имя первого игрока должно состоять из букв и может содержать дефис между буквами"
+            errors["letters1"] = "First player's name must consist of letters and may contain a hyphen between letters"
         if not is_valid_name(player_name2):
-            errors["letters2"] = "Имя второго игрока должно состоять из букв и может содержать дефис между буквами"
+            errors["letters2"] = "Second player's name must consist of letters and may contain a hyphen between letters"
 
         if len(player_name1) > MAX_LENGTH:
-            errors["max_length1"] = f"Длинна имени первого игрока не должна превышать {MAX_LENGTH} символов"
+            errors["max_length1"] = f"The first player's name must not exceed {MAX_LENGTH} characters."
         if len(player_name2) > MAX_LENGTH:
-            errors["max_length2"] = f"Длинна имени второго игрока не должна превышать {MAX_LENGTH} символов"
+            errors["max_length2"] = f"The second player's name must not exceed {MAX_LENGTH} characters."
 
         return errors
 
     @staticmethod
-    def correct_page(page, total_matches, per_page):
+    def correct_page(page: int, total_matches: int, per_page: int) -> int:
+        """
+        Corrects the page number to ensure it falls within the valid range.
+
+        :param page: The page number to validate.
+        :param total_matches: The total number of matches.
+        :param per_page: The number of matches per page.
+        :return: The corrected page number if it was out of range, otherwise the original page number.
+        """
         last_page = total_matches // per_page + 1
         if page < MIN_PAGE:
             return MIN_PAGE

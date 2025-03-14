@@ -28,8 +28,23 @@ PER_PAGE = 10
 
 
 class MatchService:
+    """
+    Provides services for managing matches.
+
+    This class encapsulates the logic for creating, updating, and retrieving match data.
+    """
+
     @staticmethod
     def create_match(db: Session, player1_id: int, player2_id: int) -> Match:
+        """
+        Creates a new match in the database.
+
+        :param db: The SQLAlchemy session.
+        :param player1_id: The ID of the first player.
+        :param player2_id: The ID of the second player.
+        :return: The newly created Match object.
+        :raises DatabaseError: If a database error occurs during match creation.
+        """
         try:
             new_match = Match(
                 uuid=str(uuid.uuid4()),
@@ -47,6 +62,15 @@ class MatchService:
 
     @staticmethod
     def add_point(db: Session, match: Match, score: dict, player_num: int) -> None:
+        """
+        Adds a point to the specified player's score and updates the game state.
+
+        :param db: The SQLAlchemy session.
+        :param match: The Match object representing the current match.
+        :param score: A dictionary representing the current score of the match.
+        :param player_num: The player number (1 or 2).
+        :raises InvalidGameStateError: If the game state is unknown.
+        """
         player_key = f"player{player_num}"
         opponent_key = "player2" if player_num == 1 else "player1"
 
@@ -81,6 +105,14 @@ class MatchService:
 
     @staticmethod
     def get_match_by_uuid(db: Session, uuid: str) -> Match:
+        """
+        Retrieves a match by its UUID.
+
+        :param db: The SQLAlchemy session.
+        :param uuid: The UUID of the match to retrieve.
+        :return: The Match object with the specified UUID.
+        :raises NotFoundMatchError: If a match with the given UUID is not found.
+        """
         match = db.query(Match).filter(Match.uuid == uuid).first()
         if match:
             return match
@@ -93,6 +125,16 @@ class MatchService:
             per_page: int = PER_PAGE,
             player_name: str | None = None
     ) -> tuple[list[Match], int]:
+        """
+        Retrieves a list of completed matches, with optional pagination and filtering by player name.
+
+        :param db: The SQLAlchemy session.
+        :param page: The page number to retrieve (defaults to MIN_PAGE).
+        :param per_page: The number of matches to retrieve per page (defaults to PER_PAGE).
+        :param player_name: The name of the player to filter by (optional).
+        :return: A tuple containing the list of completed matches and the total number of completed matches.
+        :raises DatabaseError: If a database error occurs during retrieval.
+        """
         query = (
             db.query(Match)
             .options(
@@ -103,7 +145,7 @@ class MatchService:
             .filter(Match.winner_id.isnot(None))
         )
 
-        # Фильтр по имени игрока
+        # Filter by player name
         if player_name:
             search_pattern = f'%{player_name}%'
             query = query.filter(
@@ -113,7 +155,7 @@ class MatchService:
                 )
             )
 
-        # Пагинация
+        # Pagination
         total = query.count()
         correct_page = Validation.correct_page(page, total, per_page)
         try:
@@ -124,7 +166,14 @@ class MatchService:
             raise DatabaseError("Failed to get completed matches") from e
 
     @staticmethod
-    def determine_player_number(params: dict):
+    def determine_player_number(params: dict) -> int:
+        """
+        Determines the player number (1 or 2) based on the presence of 'player1_point' or 'player2_point' in the parameters.
+
+        :param params: A dictionary of parameters.
+        :return: The player number (1 or 2).
+        :raises PlayerNumberError: If neither 'player1_point
+        """
         if 'player1_point' in params:
             return 1
         elif 'player2_point' in params:

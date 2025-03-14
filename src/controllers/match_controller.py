@@ -1,9 +1,16 @@
+"""
+Controller module for managing matches: creating, displaying and updating results.
+"""
 import json
 import logging
+from typing import Callable
 from urllib.parse import parse_qs
+
+from sqlalchemy.orm import Session
 
 from controllers.base_controller import BaseController
 from database.session import get_db
+from models.match import Match
 from services import score_utils
 from services.exceptions import (
     NotFoundMatchError,
@@ -24,22 +31,35 @@ class MatchController(BaseController):
     def __init__(self):
         super().__init__()
 
-    def new_match_form(self, environ, start_response):
-        # Отображаем форму для создания матча
+    def new_match_form(self, environ: dict, start_response: Callable[[str, list[tuple[str, str]]], None]) -> list:
+        """
+        Display the form for creating a match
+
+        :param environ: Dictionary with WSGI request data
+        :param start_response: Function to set HTTP status and headers
+        :return: Response as a list of bytes
+        """
         response_body = self.view.render_new_match_form()
         start_response('200 OK', [('Content-Type', 'text/html')])
         return [response_body.encode('utf-8')]
 
-    def create_match(self, environ, start_response):
+    def create_match(self, environ: dict, start_response: Callable[[str, list[tuple[str, str]]], None]) -> list[bytes]:
+        """
+        Creates a new match based on the form data.
+
+        :param environ: Dictionary with WSGI request data
+        :param start_response: Function to set HTTP status and headers
+        :return: Response as a list of bytes
+        """
         try:
             content_length = int(environ.get('CONTENT_LENGTH', 0))
             post_data_bytes = environ['wsgi.input'].read(content_length).decode('utf-8')
-            # Парсим параметры с учетом URL-кодирования
             params = parse_qs(post_data_bytes)
 
             player1_name = params.get('player1', [''])[0].strip()
             player2_name = params.get('player2', [''])[0].strip()
             validation_errors = Validation.player_names(player1_name, player2_name)
+
             if validation_errors:
                 response_body = self.view.render_new_match_form(
                     player1_name=player1_name,
@@ -58,22 +78,27 @@ class MatchController(BaseController):
                 db.commit()
                 db.refresh(new_match)
 
-                # Редирект на страницу матча
                 headers = [
                     ('Location', f'/match-score?uuid={new_match.uuid}'),
                     ('Content-Type', 'text/plain')
                 ]
                 start_response('302 Found', headers)
-
                 return [b'Redirecting...']
+
         except DatabaseError as e:
             return self._handle_error(start_response, e, status='500 Internal Server Error')
         except Exception as e:
             logger.critical("Unexpected error during match creation", exc_info=True)
             return self._handle_error(start_response, e, status='500 Internal Server Error')
 
-    def match_score(self, environ, start_response):
-        # Получаем UUID из параметров запроса
+    def match_score(self, environ: dict, start_response: Callable[[str, list[tuple[str, str]]], None]) -> list[bytes]:
+        """
+        Displays the current score of the match or handles updates.
+
+        :param environ: Dictionary with WSGI request data
+        :param start_response: Function to set HTTP status and headers
+        :return: Response as a list of bytes
+        """
         query = parse_qs(environ.get('QUERY_STRING', ''))
         match_uuid = query.get('uuid', [''])[0]
 
@@ -95,26 +120,38 @@ class MatchController(BaseController):
             logger.warning(f'Match not found {match.uuid}')
             start_response('404 Not Found', [('Content-Type', 'text/plain')])
             return [str(e).encode('utf-8')]
-
         except InvalidScoreError as e:
             return self._handle_error(start_response, e, match.uuid, status='400 Bad Request')
-
         except Exception as e:
             logger.critical("Unexpected error during match scoring", exc_info=True)
             return self._handle_error(start_response, e, match.uuid, status='500 Internal Server Error')
 
-    def _handle_score_update(self, environ, start_response, match, score, db):
+    def _handle_score_update(
+            self,
+            environ: dict[str, str],
+            start_response: Callable[[str, list[tuple[str, str]]], None],
+            match: Match,
+            score: dict[str, dict[str, int]],
+            db: Session
+    ) -> list[bytes]:
+        """
+        Handles updating the match score.
+
+        :param environ: Dictionary with WSGI request data
+        :param start_response: Function to set HTTP status and headers
+        :param match: Match object from the database
+        :param score: Current score as a dictionary
+        :param db: Database session
+        :return: Response as a list of bytes
+        """
         try:
             content_length = int(environ.get('CONTENT_LENGTH', 0))
             post_data = environ['wsgi.input'].read(content_length).decode('utf-8')
             params = parse_qs(post_data)
 
-            # Определяем, какой игрок получил очко
             player_num = MatchService.determine_player_number(params)
-            # Обновляем счёт
             MatchService.add_point(db, match, score, player_num)
 
-            # Проверяем завершение матча
             if score_utils.is_match_finished(score):
                 return self._render_final_score(start_response, match)
 
@@ -128,7 +165,20 @@ class MatchController(BaseController):
             logger.critical(f'Unexpected error while updating match score', exc_info=True)
             return self._handle_error(start_response, e, match.uuid, status='500 Internal Server Error')
 
-    def _render_score_page(self, start_response, match, score):
+    def _render_score_page(
+            self,
+            start_response: Callable[[str, list[tuple[str, str]]], None],
+            match: Match,
+            score: dict[str, dict[str, int]]
+    ) -> list[bytes]:
+        """
+        Generates a page with the current match score.
+
+        :param start_response: Function for setting HTTP status and headers
+        :param match: Match object from the DB
+        :param score: Current score as a dictionary
+        :return: Response as a list of bytes
+        """
         try:
             with get_db() as db:
                 context = {
@@ -155,7 +205,18 @@ class MatchController(BaseController):
             logger.critical(f'Unexpected error while rendering match score', exc_info=True)
             return self._handle_error(start_response, e, match.uuid, status='500 Internal Server Error')
 
-    def _render_final_score(self, start_response, match):
+    def _render_final_score(
+            self,
+            start_response: Callable[[str, list[tuple[str, str]]], None],
+            match: Match
+    ) -> list[bytes]:
+        """
+        Generates a page with the final result of the match.
+
+        :param start_response: Function for setting the HTTP status and headers
+        :param match: Match object from the DB
+        :return: Response as a list of bytes
+        """
         try:
             with get_db() as db:
                 context = {
@@ -169,6 +230,7 @@ class MatchController(BaseController):
                 headers = [('Content-Type', 'text/html; charset=utf-8')]
                 start_response('200 OK', headers)
                 return [response_body.encode('utf-8')]
+
         except PlayerNotFound as e:
             return self._handle_error(start_response, e, match.uuid, status='404 Not Found')
         except Exception as e:

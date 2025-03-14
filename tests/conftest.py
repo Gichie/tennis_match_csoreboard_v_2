@@ -7,7 +7,10 @@ from models.match import Match
 
 
 @pytest.fixture
-def match():
+def match() -> Match:
+    """
+    Fixture that creates and returns a sample `Match` object.
+    """
     return Match(
         uuid=str(uuid.uuid4()),
         player1_id=1,
@@ -20,7 +23,15 @@ def match():
     )
 
 
-def setup_score(match, initial_score):
+def setup_score(match: Match, initial_score: dict):
+    """
+    Sets up the score for a match based on the given initial score.
+
+    :param match: The `Match` object to set up the score for.
+    :param initial_score: A dictionary representing the initial score for the players.
+                          Example: {"player1": {"points": 1, "games": 2}, "player2": {"sets": 1}}
+    :return: A dictionary representing the updated score.
+    """
     score = json.loads(match.score)
     for player in ["player1", "player2"]:
         if player in initial_score:
