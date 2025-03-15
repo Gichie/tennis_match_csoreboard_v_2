@@ -9,7 +9,9 @@
         <p>{{ error_message }}</p>
     </div>
     <div class="actions">
+        {% if match_uuid is not none %}
         <a href="/match-score?uuid={{ match_uuid }}" class="btn">Вернуться к матчу</a>
+        {% endif %}
         <a href="/" class="btn">На главную</a>
     </div>
 </div>

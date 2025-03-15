@@ -1,11 +1,8 @@
-import os
-
-from jinja2 import Environment, FileSystemLoader
-
+from views.base_view import BaseView
 from views.template_name import TemplateName
 
 
-class CompletedMatchesView:
+class CompletedMatchesView(BaseView):
     """
     A class responsible for rendering the completed matches view using Jinja2 templates.
     """
@@ -14,10 +11,7 @@ class CompletedMatchesView:
         """
         Initializes the CompletedMatchesView by setting up the Jinja2 environment.
         """
-        template_path = os.path.join(os.path.dirname(__file__), '../templates')
-        loader = FileSystemLoader(searchpath=template_path, encoding='utf-8')
-
-        self.env = Environment(loader=loader, autoescape=True)
+        super().__init__()
 
     def render_completed_matches(self, context: dict) -> str:
         """
@@ -26,5 +20,4 @@ class CompletedMatchesView:
         :param context: A dictionary containing the data to be passed to the template.
         :return: A string containing the rendered HTML.
         """
-        template = self.env.get_template(TemplateName.COMPLETED_MATCHES.value)
-        return template.render(**context)
+        return self.render_template(TemplateName.COMPLETED_MATCHES, context)

@@ -5,7 +5,7 @@ from urllib.parse import parse_qs
 
 from controllers.base_controller import BaseController
 from database.session import get_db
-from services.exceptions import DatabaseError
+from exceptions import DatabaseError
 from services.match_service import MatchService
 from views.completed_matches_view import CompletedMatchesView
 
@@ -15,7 +15,6 @@ PER_PAGE = 10  # Number of matches per page
 
 class CompletedMatchesController(BaseController):
     def __init__(self):
-        super().__init__()
         self.view = CompletedMatchesView()
 
     def list_completed_matches(

@@ -10,9 +10,7 @@ from sqlalchemy.orm import Session
 
 from controllers.base_controller import BaseController
 from database.session import get_db
-from models.match import Match
-from services import score_utils
-from services.exceptions import (
+from exceptions import (
     NotFoundMatchError,
     InvalidGameStateError,
     PlayerNumberError,
@@ -20,6 +18,8 @@ from services.exceptions import (
     DatabaseError,
     PlayerNotFound
 )
+from models.match import Match
+from services import score_utils
 from services.match_service import MatchService
 from services.player_service import PlayerService
 from services.validation import Validation
@@ -86,10 +86,10 @@ class MatchController(BaseController):
                 return [b'Redirecting...']
 
         except DatabaseError as e:
-            return self._handle_error(start_response, e, status='500 Internal Server Error')
+            return self._handle_error(start_response, e)
         except Exception as e:
             logger.critical("Unexpected error during match creation", exc_info=True)
-            return self._handle_error(start_response, e, status='500 Internal Server Error')
+            return self._handle_error(start_response, e)
 
     def match_score(self, environ: dict, start_response: Callable[[str, list[tuple[str, str]]], None]) -> list[bytes]:
         """
@@ -110,7 +110,6 @@ class MatchController(BaseController):
                     score = json.loads(match.score)
                 except json.JSONDecodeError:
                     raise InvalidScoreError("Score data is corrupted")
-
                 if environ['REQUEST_METHOD'] == 'POST':
                     return self._handle_score_update(environ, start_response, match, score, db)
 
@@ -118,13 +117,12 @@ class MatchController(BaseController):
 
         except NotFoundMatchError as e:
             logger.warning(f'Match not found')
-            start_response('404 Not Found', [('Content-Type', 'text/plain')])
-            return [str(e).encode('utf-8')]
+            return self._handle_error(start_response, e, status='404 Not Found')
         except InvalidScoreError as e:
-            return self._handle_error(start_response, e, match.uuid, status='400 Bad Request')
+            return self._handle_error(start_response, e, status='400 Bad Request')
         except Exception as e:
             logger.critical("Unexpected error during match scoring", exc_info=True)
-            return self._handle_error(start_response, e, match.uuid, status='500 Internal Server Error')
+            return self._handle_error(start_response, e)
 
     def _handle_score_update(
             self,
@@ -163,7 +161,7 @@ class MatchController(BaseController):
 
         except Exception as e:
             logger.critical(f'Unexpected error while updating match score', exc_info=True)
-            return self._handle_error(start_response, e, match.uuid, status='500 Internal Server Error')
+            return self._handle_error(start_response, e, match.uuid)
 
     def _render_score_page(
             self,
@@ -200,10 +198,10 @@ class MatchController(BaseController):
                 start_response('200 OK', headers)
                 return [response_body.encode('utf-8')]  # Обязательное кодирование
         except PlayerNotFound as e:
-            return self._handle_error(start_response, e, match.uuid, status='404 Not Found')
+            return self._handle_error(start_response, e, status='404 Not Found')
         except Exception as e:
             logger.critical(f'Unexpected error while rendering match score', exc_info=True)
-            return self._handle_error(start_response, e, match.uuid, status='500 Internal Server Error')
+            return self._handle_error(start_response, e)
 
     def _render_final_score(
             self,
@@ -232,7 +230,7 @@ class MatchController(BaseController):
                 return [response_body.encode('utf-8')]
 
         except PlayerNotFound as e:
-            return self._handle_error(start_response, e, match.uuid, status='404 Not Found')
+            return self._handle_error(start_response, e, status='404 Not Found')
         except Exception as e:
             logger.critical(f'Unexpected error while rendering final match score', exc_info=True)
-            return self._handle_error(start_response, e, match.uuid, status='500 Internal Server Error')
+            return self._handle_error(start_response, e)

@@ -4,7 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from models.player import Player
-from services.exceptions import DatabaseError, PlayerNotFound
+from exceptions import DatabaseError, PlayerNotFound
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +60,7 @@ class PlayerService:
         :raises PlayerNotFound: If a player with the given ID is not found.
         """
         player = db.query(Player).get(player_id)
+
         if player:
             return player.name
         else:

@@ -6,10 +6,10 @@ from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
 
+from exceptions import InvalidGameStateError, NotFoundMatchError, PlayerNumberError, DatabaseError
 from models.match import Match
 from models.player import Player
 from services import score_utils
-from services.exceptions import InvalidGameStateError, NotFoundMatchError, PlayerNumberError, DatabaseError
 from services.strategies.advantage_state_strategy import AdvantageStateStrategy
 from services.strategies.deuce_state_strategy import DeuceStateStrategy
 from services.strategies.regular_state_strategy import RegularStateStrategy
@@ -116,7 +116,7 @@ class MatchService:
         match = db.query(Match).filter(Match.uuid == uuid).first()
         if match:
             return match
-        raise NotFoundMatchError(uuid)
+        raise NotFoundMatchError(f"Match with uuid: {uuid} not found")
 
     @staticmethod
     def get_completed_matches(
@@ -174,6 +174,7 @@ class MatchService:
         :return: The player number (1 or 2).
         :raises PlayerNumberError: If neither 'player1_point
         """
+
         if 'player1_point' in params:
             return 1
         elif 'player2_point' in params:

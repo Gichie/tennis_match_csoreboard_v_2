@@ -55,5 +55,5 @@ def application(environ: dict, start_response) -> list[bytes]:
 
 
 # Path to static files
-static_path = os.path.join(os.path.dirname(__file__), 'src/static')
+static_path = os.path.join(os.path.dirname(__file__), 'static')
 app_with_static = WhiteNoise(application, root=static_path, prefix='/static')
