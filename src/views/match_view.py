@@ -1,17 +1,11 @@
 import logging
 import os
-from enum import Enum
 
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 
+from views.template_name import TemplateName
+
 logger = logging.getLogger(__name__)
-
-
-class TemplateName(Enum):
-    NEW_MATCH_FORM = 'new_match.html'
-    MATCH_SCORE = 'match_score.html'
-    FINAL_SCORE = 'final_score.html'
-    ERROR_PAGE = 'error.html'
 
 
 class MatchView:
@@ -44,26 +38,14 @@ class MatchView:
             return "Error rendering template"
 
     def render_new_match_form(self, player1_name: str = '', player2_name: str = '', errors: dict | None = None) -> str:
-        """
-        Renders the form for creating a new match.
-        """
         context = {'player1_name': player1_name, 'player2_name': player2_name, 'errors': errors or {}}
         return self.render_template(TemplateName.NEW_MATCH_FORM, context)
 
     def render_match_score(self, context: dict) -> str:
-        """
-        Renders the current score of a match.
-        """
         return self.render_template(TemplateName.MATCH_SCORE, context)
 
     def render_final_score(self, context: dict) -> str:
-        """
-        Renders the final score of a match.
-        """
         return self.render_template(TemplateName.FINAL_SCORE, context)
 
     def render_error_page(self, context: dict) -> str:
-        """
-        Renders an error page.
-        """
         return self.render_template(TemplateName.ERROR_PAGE, context)

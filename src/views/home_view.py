@@ -2,6 +2,8 @@ import os
 
 from jinja2 import Environment, FileSystemLoader
 
+from views.template_name import TemplateName
+
 
 class HomeView:
     """
@@ -13,10 +15,5 @@ class HomeView:
         self.env = Environment(loader=FileSystemLoader(template_path))
 
     def render_home(self) -> str:
-        """
-        Renders the home page HTML.
-
-        :return: A string containing the rendered HTML for the home page.
-        """
-        template = self.env.get_template('home.html')
+        template = self.env.get_template(TemplateName.HOME_PAGE.value)
         return template.render()

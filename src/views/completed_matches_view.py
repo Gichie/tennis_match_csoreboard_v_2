@@ -2,6 +2,8 @@ import os
 
 from jinja2 import Environment, FileSystemLoader
 
+from views.template_name import TemplateName
+
 
 class CompletedMatchesView:
     """
@@ -24,5 +26,5 @@ class CompletedMatchesView:
         :param context: A dictionary containing the data to be passed to the template.
         :return: A string containing the rendered HTML.
         """
-        template = self.env.get_template('completed_matches.html')
+        template = self.env.get_template(TemplateName.COMPLETED_MATCHES.value)
         return template.render(**context)
