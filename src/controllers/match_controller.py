@@ -116,7 +116,7 @@ class MatchController(BaseController):
                 return self._render_score_page(start_response, match, score)
 
         except NotFoundMatchError as e:
-            logger.warning(f'Match not found')
+            logger.warning('Match not found')
             return self._handle_error(start_response, e, status='404 Not Found')
         except InvalidScoreError as e:
             return self._handle_error(start_response, e, status='400 Bad Request')
@@ -160,7 +160,7 @@ class MatchController(BaseController):
             return self._handle_error(start_response, e, match.uuid, status='400 Bad Request')
 
         except Exception as e:
-            logger.critical(f'Unexpected error while updating match score', exc_info=True)
+            logger.critical('Unexpected error while updating match score', exc_info=True)
             return self._handle_error(start_response, e, match.uuid)
 
     def _render_score_page(
@@ -200,7 +200,7 @@ class MatchController(BaseController):
         except PlayerNotFound as e:
             return self._handle_error(start_response, e, status='404 Not Found')
         except Exception as e:
-            logger.critical(f'Unexpected error while rendering match score', exc_info=True)
+            logger.critical('Unexpected error while rendering match score', exc_info=True)
             return self._handle_error(start_response, e)
 
     def _render_final_score(
@@ -232,5 +232,5 @@ class MatchController(BaseController):
         except PlayerNotFound as e:
             return self._handle_error(start_response, e, status='404 Not Found')
         except Exception as e:
-            logger.critical(f'Unexpected error while rendering final match score', exc_info=True)
+            logger.critical('Unexpected error while rendering final match score', exc_info=True)
             return self._handle_error(start_response, e)

@@ -49,7 +49,7 @@ def application(environ: dict, start_response) -> list[bytes]:
             start_response("404 Not Found", [("Content-Type", "text/plain")])
             return [b"404 Not Found"]
     except Exception as e:
-        logger.error(f"500 Internal Server Error", exc_info=True)
+        logger.error("500 Internal Server Error", exc_info=True)
         start_response("500 Internal Server Error", [("Content-Type", "text/plain")])
         return [f"Error: {str(e)}".encode("utf-8")]
 

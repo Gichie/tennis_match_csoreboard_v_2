@@ -11,4 +11,4 @@ if __name__ == '__main__':
     port = 8080
     logger.info(f"The server is running http://{host}:{port}/")
     serve(app_with_static, host=host, port=port, _quiet=True)
-    logger.info(f"The server has stopped")
+    logger.info("The server has stopped")

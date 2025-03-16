@@ -45,7 +45,7 @@ class PlayerService:
                 db.commit()
                 db.refresh(player)
             return player.id
-        except SQLAlchemyError as e:
+        except SQLAlchemyError:
             logger.error('Failed to get or create player id')
             raise DatabaseError('Failed to get or create player id')
 
