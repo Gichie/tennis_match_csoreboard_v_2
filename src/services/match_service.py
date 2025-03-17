@@ -7,6 +7,7 @@ from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
 
+from config.config import PER_PAGE
 from exceptions import InvalidGameStateError, NotFoundMatchError, PlayerNumberError, DatabaseError
 from models.match import Match
 from models.player import Player
@@ -24,8 +25,6 @@ STATE_STRATEGY = {
     'tie_break': TieBreakStateStrategy(),
     'advantage': AdvantageStateStrategy(),
 }
-
-PER_PAGE = 10
 
 
 class MatchService:

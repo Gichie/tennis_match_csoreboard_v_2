@@ -30,7 +30,7 @@ class Match(Base):
 
 # Event handler
 @event.listens_for(Match, 'before_insert')
-def set_default_score(mapper: Mapper[JSON], connection: Connection, target: Match) -> None:
+def set_default_score(mapper: Mapper[Match], connection: Connection, target: Match) -> None:
     """
     Sets a default score for a match if no score is provided during insertion.
 
@@ -44,7 +44,7 @@ def set_default_score(mapper: Mapper[JSON], connection: Connection, target: Matc
 
 
 @event.listens_for(Match, 'before_insert')
-def validate_uuid(mapper: Mapper[str], connection: Connection, target: Match) -> None:
+def validate_uuid(mapper: Mapper[Match], connection: Connection, target: Match) -> None:
     """
     Validates that a UUID is set before inserting a new match.
 

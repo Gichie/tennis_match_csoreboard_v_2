@@ -4,6 +4,7 @@ from math import ceil
 from typing import Callable, Any
 from urllib.parse import parse_qs
 
+from config.config import PER_PAGE
 from controllers.base_controller import BaseController
 from database.session import get_db
 from exceptions import DatabaseError
@@ -12,7 +13,6 @@ from services.match_service import MatchService
 from views.completed_matches_view import CompletedMatchesView
 
 logger = logging.getLogger(__name__)
-PER_PAGE = 10  # Number of matches per page
 
 
 class CompletedMatchesController(BaseController):

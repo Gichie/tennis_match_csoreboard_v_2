@@ -1,8 +1,4 @@
-import re
-
-MAX_LENGTH = 64
-NAME_PATTERN = re.compile(r'^[^\W\d_]+(?:-[^\W\d_]+)*$', re.UNICODE)
-MIN_PAGE = 1
+from config.config import NAME_PATTERN, MAX_LENGTH, MIN_PAGE
 
 
 class Validation:
@@ -59,8 +55,9 @@ class Validation:
         :return: The corrected page number if it was out of range, otherwise the original page number.
         """
         last_page = total_matches // per_page + 1
-        if page < MIN_PAGE:
-            return MIN_PAGE
+        min_page: int = MIN_PAGE
+        if page < min_page:
+            return min_page
         elif page > last_page:
             return last_page
         return page
