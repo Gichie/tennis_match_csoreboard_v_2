@@ -23,7 +23,7 @@ def match() -> Match:
     )
 
 
-def setup_score(match: Match, initial_score: dict):
+def setup_score(match: Match, initial_score: dict[str, dict[str, int]]) -> dict[str, dict[str, int]]:
     """
     Sets up the score for a match based on the given initial score.
 
@@ -32,7 +32,7 @@ def setup_score(match: Match, initial_score: dict):
                           Example: {"player1": {"points": 1, "games": 2}, "player2": {"sets": 1}}
     :return: A dictionary representing the updated score.
     """
-    score = json.loads(match.score)
+    score: dict[str, dict[str, int]] = json.loads(match.score)
     for player in ["player1", "player2"]:
         if player in initial_score:
             for key in ["points", "games", "sets"]:

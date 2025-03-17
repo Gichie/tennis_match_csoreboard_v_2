@@ -3,7 +3,7 @@ Controller module for managing matches: creating, displaying and updating result
 """
 import json
 import logging
-from typing import Callable
+from typing import Callable, Any
 from urllib.parse import parse_qs
 
 from sqlalchemy.orm import Session
@@ -28,10 +28,14 @@ logger = logging.getLogger(__name__)
 
 
 class MatchController(BaseController):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-    def new_match_form(self, environ: dict, start_response: Callable[[str, list[tuple[str, str]]], None]) -> list:
+    def new_match_form(
+            self,
+            environ: dict[str, Any],
+            start_response: Callable[[str, list[tuple[str, str]]], None]
+    ) -> list[bytes]:
         """
         Display the form for creating a match
 
@@ -43,7 +47,11 @@ class MatchController(BaseController):
         start_response('200 OK', [('Content-Type', 'text/html')])
         return [response_body.encode('utf-8')]
 
-    def create_match(self, environ: dict, start_response: Callable[[str, list[tuple[str, str]]], None]) -> list[bytes]:
+    def create_match(
+            self,
+            environ: dict[str, Any],
+            start_response: Callable[[str, list[tuple[str, str]]], None]
+    ) -> list[bytes]:
         """
         Creates a new match based on the form data.
 
@@ -86,12 +94,18 @@ class MatchController(BaseController):
                 return [b'Redirecting...']
 
         except DatabaseError as e:
-            return self._handle_error(start_response, e)
+            result: list[bytes] = self._handle_error(start_response, e)
+            return result
         except Exception as e:
             logger.critical("Unexpected error during match creation", exc_info=True)
-            return self._handle_error(start_response, e)
+            result_exc: list[bytes] = self._handle_error(start_response, e)
+            return result_exc
 
-    def match_score(self, environ: dict, start_response: Callable[[str, list[tuple[str, str]]], None]) -> list[bytes]:
+    def match_score(
+            self,
+            environ: dict[str, Any],
+            start_response: Callable[[str, list[tuple[str, str]]], None]
+    ) -> list[bytes]:
         """
         Displays the current score of the match or handles updates.
 
@@ -117,16 +131,19 @@ class MatchController(BaseController):
 
         except NotFoundMatchError as e:
             logger.warning('Match not found')
-            return self._handle_error(start_response, e, status='404 Not Found')
+            result: list[bytes] = self._handle_error(start_response, e, status='404 Not Found')
+            return result
         except InvalidScoreError as e:
-            return self._handle_error(start_response, e, status='400 Bad Request')
+            result_handle_error: list[bytes] = self._handle_error(start_response, e, status='400 Bad Request')
+            return result_handle_error
         except Exception as e:
             logger.critical("Unexpected error during match scoring", exc_info=True)
-            return self._handle_error(start_response, e)
+            result_exc: list[bytes] = self._handle_error(start_response, e)
+            return result_exc
 
     def _handle_score_update(
             self,
-            environ: dict[str, str],
+            environ: dict[str, Any],
             start_response: Callable[[str, list[tuple[str, str]]], None],
             match: Match,
             score: dict[str, dict[str, int]],
@@ -157,11 +174,12 @@ class MatchController(BaseController):
 
         except (InvalidGameStateError, PlayerNumberError) as e:
             logger.warning(f"Invalid operation for match {match.uuid}")
-            return self._handle_error(start_response, e, match.uuid, status='400 Bad Request')
-
+            result: list[bytes] = self._handle_error(start_response, e, match.uuid, status='400 Bad Request')
+            return result
         except Exception as e:
             logger.critical('Unexpected error while updating match score', exc_info=True)
-            return self._handle_error(start_response, e, match.uuid)
+            result_exc: list[bytes] = self._handle_error(start_response, e, match.uuid)
+            return result_exc
 
     def _render_score_page(
             self,
@@ -198,10 +216,12 @@ class MatchController(BaseController):
                 start_response('200 OK', headers)
                 return [response_body.encode('utf-8')]  # Обязательное кодирование
         except PlayerNotFound as e:
-            return self._handle_error(start_response, e, status='404 Not Found')
+            result: list[bytes] = self._handle_error(start_response, e, status='404 Not Found')
+            return result
         except Exception as e:
             logger.critical('Unexpected error while rendering match score', exc_info=True)
-            return self._handle_error(start_response, e)
+            result_exc: list[bytes] = self._handle_error(start_response, e)
+            return result_exc
 
     def _render_final_score(
             self,
@@ -230,7 +250,9 @@ class MatchController(BaseController):
                 return [response_body.encode('utf-8')]
 
         except PlayerNotFound as e:
-            return self._handle_error(start_response, e, status='404 Not Found')
+            result: list[bytes] = self._handle_error(start_response, e, status='404 Not Found')
+            return result
         except Exception as e:
             logger.critical('Unexpected error while rendering final match score', exc_info=True)
-            return self._handle_error(start_response, e)
+            result_exc: list[bytes] = self._handle_error(start_response, e)
+            return result_exc

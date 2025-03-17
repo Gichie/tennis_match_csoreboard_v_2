@@ -6,7 +6,7 @@ MIN_SETS = 2
 MIN_TIE_BREAK_POINTS = 7
 
 
-def process_tie_break(match: Match, score: dict, player_key: str, opponent_key: str) -> None:
+def process_tie_break(match: Match, score: dict[str, dict[str, int]], player_key: str, opponent_key: str) -> None:
     """
     Processes a point scored during a tie-break game.
 
@@ -21,7 +21,7 @@ def process_tie_break(match: Match, score: dict, player_key: str, opponent_key: 
         reset_set(match, score, player_key)
 
 
-def reset_set(match: Match, score: dict, winner_key: str) -> None:
+def reset_set(match: Match, score: dict[str, dict[str, int]], winner_key: str) -> None:
     """
     Resets the score for a set after a winner is determined.
 
@@ -38,7 +38,7 @@ def reset_set(match: Match, score: dict, winner_key: str) -> None:
     match.current_game_state = 'regular'
 
 
-def reset_game(score: dict, winner_key: str) -> None:
+def reset_game(score: dict[str, dict[str, int]], winner_key: str) -> None:
     """
     Resets the score for a game after a winner is determined.
 
@@ -51,7 +51,7 @@ def reset_game(score: dict, winner_key: str) -> None:
     score[opponent_key]["points"] = 0
 
 
-def is_match_finished(score: dict) -> bool:
+def is_match_finished(score: dict[str, dict[str, int]]) -> bool:
     """
     Checks if the match is finished.
 
@@ -61,7 +61,7 @@ def is_match_finished(score: dict) -> bool:
     return score["player1"]["sets"] == MIN_SETS or score["player2"]["sets"] == MIN_SETS
 
 
-def is_set_finished(score: dict, player_key: str, opponent_key: str) -> bool:
+def is_set_finished(score: dict[str, dict[str, int]], player_key: str, opponent_key: str) -> bool:
     """
     Checks if a set is finished.
 
@@ -76,7 +76,7 @@ def is_set_finished(score: dict, player_key: str, opponent_key: str) -> bool:
     )
 
 
-def is_tie_break(score: dict, player_key: str, opponent_key: str) -> bool:
+def is_tie_break(score: dict[str, dict[str, int]], player_key: str, opponent_key: str) -> bool:
     """
     Checks if a set is at tie-break.
 

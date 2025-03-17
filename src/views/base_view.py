@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Any
 
 from jinja2 import FileSystemLoader, Environment
 
@@ -9,12 +10,12 @@ logger = logging.getLogger(__name__)
 
 
 class BaseView:
-    def __init__(self):
+    def __init__(self) -> None:
         template_path = os.path.join(os.path.dirname(__file__), '../templates')
         loader = FileSystemLoader(searchpath=template_path, encoding='utf-8')
         self.env = Environment(loader=loader, autoescape=True)
 
-    def render_template(self, template_name: TemplateName, context: dict | None = None) -> str:
+    def render_template(self, template_name: TemplateName, context: dict[str, Any] | None = None) -> str:
         """
         Renders a template based on the given TemplateName enum.
 
@@ -30,5 +31,5 @@ class BaseView:
             logger.critical(f"Template not found: {template_name.value}")
             return "Error rendering template"
 
-    def render_error_page(self, context: dict) -> str:
+    def render_error_page(self, context: dict[str, str | None]) -> str:
         return self.render_template(TemplateName.ERROR_PAGE, context)

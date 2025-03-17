@@ -72,7 +72,7 @@ class TestAdvantageStateStrategy:
     def test_add_point(
             self,
             match: Match,
-            initial_score: dict,
+            initial_score: dict[str, dict[str, int]],
             player_key: str,
             initial_game_state: str,
             expected_state: str,

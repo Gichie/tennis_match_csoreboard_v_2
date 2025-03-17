@@ -7,8 +7,9 @@ class HomeView(BaseView):
     A class for rendering the home page using Jinja2 templates.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
     def render_home(self) -> str:
-        return self.render_template(TemplateName.HOME_PAGE)
+        result: str = self.render_template(TemplateName.HOME_PAGE)
+        return result

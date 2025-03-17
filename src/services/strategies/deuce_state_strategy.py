@@ -10,7 +10,14 @@ class DeuceStateStrategy(GameStateStrategy):
     It determines whether a player gains an advantage or if the score remains at deuce.
     """
 
-    def add_point(self, match: Match, score: dict, player_key: str, opponent_key: str, player_num: int) -> None:
+    def add_point(
+            self,
+            match: Match,
+            score: dict[str, dict[str, int]],
+            player_key: str,
+            opponent_key: str,
+            player_num: int
+    ) -> None:
         """
         Adds a point to the specified player's score and updates the game state.
 

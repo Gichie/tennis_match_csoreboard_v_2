@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Any, Callable
 
 from whitenoise import WhiteNoise
 
@@ -28,7 +29,7 @@ routes = {
 }
 
 
-def application(environ: dict, start_response) -> list[bytes]:
+def application(environ: dict[str, Any], start_response: Callable[[str, list[tuple[str, str]]], None]) -> Any:
     """
     WSGI application that handles routing and request processing.
 

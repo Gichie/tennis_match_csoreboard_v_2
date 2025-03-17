@@ -1,7 +1,7 @@
 """
 Module containing the Home Controller for rendering the main page.
 """
-from typing import Callable
+from typing import Callable, Any
 
 from views.home_view import HomeView
 
@@ -11,10 +11,14 @@ class HomeController:
     Controller for managing the home page.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.view = HomeView()
 
-    def index(self, environ: dict, start_response: Callable[[str, list[tuple[str, str]]], None]) -> list[bytes]:
+    def index(
+            self,
+            environ: dict[str, Any],
+            start_response: Callable[[str, list[tuple[str, str]]], None]
+    ) -> list[bytes]:
         """
         Handle incoming HTTP requests for the home page.
 

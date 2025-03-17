@@ -1,6 +1,7 @@
 import json
 import logging
 import uuid
+from typing import Any, Type
 
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
@@ -61,7 +62,7 @@ class MatchService:
             raise DatabaseError("Failed to create match") from e
 
     @staticmethod
-    def add_point(db: Session, match: Match, score: dict, player_num: int) -> None:
+    def add_point(db: Session, match: Match, score: dict[str, dict[str, int]], player_num: int) -> None:
         """
         Adds a point to the specified player's score and updates the game state.
 
@@ -124,7 +125,7 @@ class MatchService:
             page: int = MIN_PAGE,
             per_page: int = PER_PAGE,
             player_name: str | None = None
-    ) -> tuple[list[Match], int]:
+    ) -> tuple[list[Type[Match]], int, int]:
         """
         Retrieves a list of completed matches, with optional pagination and filtering by player name.
 
@@ -166,9 +167,12 @@ class MatchService:
             raise DatabaseError("Failed to get completed matches") from e
 
     @staticmethod
-    def determine_player_number(params: dict) -> int:
+    def determine_player_number(params: dict[Any, list[Any]]) -> int:
         """
-        Determines the player number (1 or 2) based on the presence of 'player1_point' or 'player2_point' in the parameters.
+        Returns the player number (1 or 2) based on parameters.
+
+        Determines the player number (1 or 2) based on the presence of
+        'player1_point' or 'player2_point' in the parameters.
 
         :param params: A dictionary of parameters.
         :return: The player number (1 or 2).

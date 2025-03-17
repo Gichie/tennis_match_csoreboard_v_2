@@ -3,8 +3,8 @@ import logging
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from models.player import Player
 from exceptions import DatabaseError, PlayerNotFound
+from models.player import Player
 
 logger = logging.getLogger(__name__)
 
@@ -38,13 +38,14 @@ class PlayerService:
         :raises DatabaseError: If a database error occurs during retrieval or creation.
         """
         try:
-            player = db.query(Player).filter(Player.name.ilike(name)).first()
+            player: Player = db.query(Player).filter(Player.name.ilike(name)).first()
             if not player:
                 player = PlayerService.create_player(name)
                 db.add(player)
                 db.commit()
                 db.refresh(player)
-            return player.id
+            player_id: int = player.id
+            return player_id
         except SQLAlchemyError:
             logger.error('Failed to get or create player id')
             raise DatabaseError('Failed to get or create player id')
@@ -59,10 +60,11 @@ class PlayerService:
         :return: The name of the player.
         :raises PlayerNotFound: If a player with the given ID is not found.
         """
-        player = db.query(Player).get(player_id)
+        player: Player = db.query(Player).get(player_id)
 
         if player:
-            return player.name
+            player_name: str = player.name
+            return player_name
         else:
             logger.error("Error getting name")
             raise PlayerNotFound(player_id)

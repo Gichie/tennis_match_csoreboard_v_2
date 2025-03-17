@@ -11,7 +11,7 @@ class Validation:
     """
 
     @staticmethod
-    def player_names(player1_name: str, player2_name: str) -> dict:
+    def player_names(player1_name: str, player2_name: str) -> dict[str, str]:
         """
         Validates player names to ensure they meet specific criteria.
 
@@ -33,7 +33,7 @@ class Validation:
         if player_name1 == player_name2:
             errors["duplicate"] = "Player names must be different"
 
-        def is_valid_name(name):
+        def is_valid_name(name: str) -> bool:
             return all(NAME_PATTERN.match(word) for word in name.split())
 
         if not is_valid_name(player_name1):

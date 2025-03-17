@@ -43,7 +43,7 @@ class TestRegularStateStrategy:
     def test_add_point(
             self,
             match: Match,
-            initial_score: dict,
+            initial_score: dict[str, dict[str, int]],
             player_key: str,
             expected_state: str,
             expected_points_player1: int,
