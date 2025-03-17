@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import String
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-from .base import Base
+from models.base import Base
+
+if TYPE_CHECKING:
+    from models.match import Match
 
 
 class Player(Base):

@@ -6,6 +6,9 @@ from sqlalchemy import pool
 
 from config.config import DATABASE_URI
 from models.base import Base
+from models.match import Match  # noqa
+from models.player import Player  # noqa
+
 
 config = context.config
 

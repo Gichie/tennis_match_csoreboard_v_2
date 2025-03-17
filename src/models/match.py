@@ -3,8 +3,8 @@ import json
 from sqlalchemy import String, ForeignKey, event, JSON, Connection
 from sqlalchemy.orm import relationship, Mapped, mapped_column, Mapper
 
-from .base import Base
-from .player import Player
+from models.base import Base
+from models.player import Player
 
 
 class Match(Base):
@@ -20,7 +20,7 @@ class Match(Base):
     player1_id: Mapped[int] = mapped_column(ForeignKey('players.id'), nullable=False)
     player2_id: Mapped[int] = mapped_column(ForeignKey('players.id'), nullable=False)
     winner_id: Mapped[int] = mapped_column(ForeignKey('players.id'), nullable=True)
-    score: Mapped[JSON] = mapped_column(JSON, nullable=False)
+    score: Mapped[str] = mapped_column(JSON, nullable=False)
     current_game_state: Mapped[str] = mapped_column(String(26), default='regular')
 
     player1: Mapped[Player] = relationship(foreign_keys=[player1_id], back_populates="matches_as_player1")
@@ -30,7 +30,7 @@ class Match(Base):
 
 # Event handler
 @event.listens_for(Match, 'before_insert')
-def set_default_score(mapper: Mapper, connection: Connection, target: Match) -> None:
+def set_default_score(mapper: Mapper[JSON], connection: Connection, target: Match) -> None:
     """
     Sets a default score for a match if no score is provided during insertion.
 
@@ -44,7 +44,7 @@ def set_default_score(mapper: Mapper, connection: Connection, target: Match) -> 
 
 
 @event.listens_for(Match, 'before_insert')
-def validate_uuid(mapper: Mapper, connection: Connection, target: Match) -> None:
+def validate_uuid(mapper: Mapper[str], connection: Connection, target: Match) -> None:
     """
     Validates that a UUID is set before inserting a new match.
 
