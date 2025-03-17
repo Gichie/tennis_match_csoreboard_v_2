@@ -47,7 +47,7 @@ class PlayerService:
             player_id: int = player.id
             return player_id
         except SQLAlchemyError:
-            logger.error('Failed to get or create player id')
+            logger.error(f'Failed to get or create player id for name: {name}', exc_info=True)
             raise DatabaseError('Failed to get or create player id')
 
     @staticmethod
@@ -66,5 +66,5 @@ class PlayerService:
             player_name: str = player.name
             return player_name
         else:
-            logger.error("Error getting name")
+            logger.error(f"Player with id {player_id} not found")
             raise PlayerNotFound(player_id)

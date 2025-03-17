@@ -14,6 +14,7 @@ class BaseView:
         template_path = os.path.join(os.path.dirname(__file__), '../templates')
         loader = FileSystemLoader(searchpath=template_path, encoding='utf-8')
         self.env = Environment(loader=loader, autoescape=True)
+        logger.debug(f"Initialized Jinja2 Environment with template path: {template_path}")
 
     def render_template(self, template_name: TemplateName, context: dict[str, Any] | None = None) -> str:
         """

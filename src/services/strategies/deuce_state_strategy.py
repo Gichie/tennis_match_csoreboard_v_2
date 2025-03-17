@@ -1,6 +1,8 @@
 from models.match import Match
 from services.strategies.game_state_strategy import GameStateStrategy
+import logging
 
+logger = logging.getLogger(__name__)
 
 class DeuceStateStrategy(GameStateStrategy):
     """
@@ -28,5 +30,7 @@ class DeuceStateStrategy(GameStateStrategy):
         :param player_num: The player number (1 or 2).
         """
         score[player_key]["points"] += 1
+        logger.debug(f"Player '{player_key}' scored a point.")
         if score[player_key]["points"] != score[opponent_key]["points"]:
             match.current_game_state = f'advantage_{player_num}'
+            logger.debug(f"Points differ. Updating game state to: {match.current_game_state}")

@@ -5,10 +5,16 @@ MIN_GAMES = 6
 MIN_SETS = 2
 MIN_TIE_BREAK_POINTS = 7
 
+ScoreDict = dict[str, dict[str, int]]
 
-def process_tie_break(match: Match, score: dict[str, dict[str, int]], player_key: str, opponent_key: str) -> None:
+
+def process_tie_break(match: Match, score: ScoreDict, player_key: str, opponent_key: str) -> None:
     """
     Processes a point scored during a tie-break game.
+
+    Increases the player's score. If the player scores at least
+    MIN_TIE_BREAK_POINTS points and leads the opponent by at least SCORE_DIFF,
+    the set is reset.
 
     :param match: The Match object representing the current match.
     :param score: A dictionary representing the current score of the match.
@@ -21,7 +27,17 @@ def process_tie_break(match: Match, score: dict[str, dict[str, int]], player_key
         reset_set(match, score, player_key)
 
 
-def reset_set(match: Match, score: dict[str, dict[str, int]], winner_key: str) -> None:
+def get_opponent_key(player_key: str) -> str:
+    """
+    Returns the opponent key given the player key.
+
+    :param player_key: Player key (e.g. 'player1').
+    :return: Opponent key (e.g. 'player2').
+    """
+    return "player2" if player_key == "player1" else "player1"
+
+
+def reset_set(match: Match, score: ScoreDict, winner_key: str) -> None:
     """
     Resets the score for a set after a winner is determined.
 
@@ -31,14 +47,14 @@ def reset_set(match: Match, score: dict[str, dict[str, int]], winner_key: str) -
     """
     score[winner_key]["sets"] += 1
     score[winner_key]["games"] = 0
-    opponent_key = "player2" if winner_key == "player1" else "player1"
+    opponent_key = get_opponent_key(winner_key)
     score[opponent_key]["games"] = 0
     score[winner_key]["points"] = 0
     score[opponent_key]["points"] = 0
     match.current_game_state = 'regular'
 
 
-def reset_game(score: dict[str, dict[str, int]], winner_key: str) -> None:
+def reset_game(score: ScoreDict, winner_key: str) -> None:
     """
     Resets the score for a game after a winner is determined.
 
@@ -47,11 +63,11 @@ def reset_game(score: dict[str, dict[str, int]], winner_key: str) -> None:
     """
     score[winner_key]["games"] += 1
     score[winner_key]["points"] = 0
-    opponent_key = "player2" if winner_key == "player1" else "player1"
+    opponent_key = get_opponent_key(winner_key)
     score[opponent_key]["points"] = 0
 
 
-def is_match_finished(score: dict[str, dict[str, int]]) -> bool:
+def is_match_finished(score: ScoreDict) -> bool:
     """
     Checks if the match is finished.
 
@@ -61,7 +77,7 @@ def is_match_finished(score: dict[str, dict[str, int]]) -> bool:
     return score["player1"]["sets"] == MIN_SETS or score["player2"]["sets"] == MIN_SETS
 
 
-def is_set_finished(score: dict[str, dict[str, int]], player_key: str, opponent_key: str) -> bool:
+def is_set_finished(score: ScoreDict, player_key: str, opponent_key: str) -> bool:
     """
     Checks if a set is finished.
 
@@ -76,7 +92,7 @@ def is_set_finished(score: dict[str, dict[str, int]], player_key: str, opponent_
     )
 
 
-def is_tie_break(score: dict[str, dict[str, int]], player_key: str, opponent_key: str) -> bool:
+def is_tie_break(score: ScoreDict, player_key: str, opponent_key: str) -> bool:
     """
     Checks if a set is at tie-break.
 
