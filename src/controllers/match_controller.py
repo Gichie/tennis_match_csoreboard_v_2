@@ -93,12 +93,10 @@ class MatchController(BaseController):
                 return [b'Redirecting...']
 
         except DatabaseError as e:
-            result: list[bytes] = self._handle_error(start_response, e)
-            return result
+            return self._handle_error(start_response, e)
         except Exception as e:
             logger.critical("Unexpected error during match creation", exc_info=True)
-            result_exc: list[bytes] = self._handle_error(start_response, e)
-            return result_exc
+            return self._handle_error(start_response, e)
 
     def match_score(
             self,
@@ -126,19 +124,16 @@ class MatchController(BaseController):
                 if environ['REQUEST_METHOD'] == 'POST':
                     return self._handle_score_update(environ, start_response, match, score, db)
 
-                return self._render_score_page(start_response, match, score)
+                return self._render_score_page(start_response, match, score, db)
 
         except NotFoundMatchError as e:
             logger.warning('Match not found')
-            result: list[bytes] = self._handle_error(start_response, e, status='404 Not Found')
-            return result
+            return self._handle_error(start_response, e, status='404 Not Found')
         except InvalidScoreError as e:
-            result_handle_error: list[bytes] = self._handle_error(start_response, e, status='400 Bad Request')
-            return result_handle_error
+            return self._handle_error(start_response, e, status='400 Bad Request')
         except Exception as e:
             logger.critical("Unexpected error during match scoring", exc_info=True)
-            result_exc: list[bytes] = self._handle_error(start_response, e)
-            return result_exc
+            return self._handle_error(start_response, e)
 
     def _handle_score_update(
             self,
@@ -165,14 +160,13 @@ class MatchController(BaseController):
             MatchService.add_point(db, match, score, player_num)
 
             if score_utils.is_match_finished(score):
-                return self._render_final_score(start_response, match)
+                return self._render_final_score(start_response, match, db)
 
-            return self._render_score_page(start_response, match, score)
+            return self._render_score_page(start_response, match, score, db)
 
         except (InvalidGameStateError, PlayerNumberError) as e:
             logger.warning(f"Invalid operation for match {match.uuid}")
-            result: list[bytes] = self._handle_error(start_response, e, match.uuid, status='400 Bad Request')
-            return result
+            return self._handle_error(start_response, e, match.uuid, status='400 Bad Request')
         except Exception as e:
             logger.critical('Unexpected error while updating match score', exc_info=True)
             return self._handle_error(start_response, e, match.uuid)
@@ -181,7 +175,8 @@ class MatchController(BaseController):
             self,
             start_response: Callable[[str, list[tuple[str, str]]], None],
             match: Match,
-            score: dict[str, dict[str, int]]
+            score: dict[str, dict[str, int]],
+            db: Session
     ) -> list[bytes]:
         """
         Generates a page with the current match score.
@@ -192,25 +187,24 @@ class MatchController(BaseController):
         :return: Response as a list of bytes
         """
         try:
-            with get_db() as db:
-                context = {
-                    "uuid": match.uuid,
-                    "player1": PlayerService.get_name(db, match.player1_id),
-                    "player2": PlayerService.get_name(db, match.player2_id),
-                    "player1_points": score["player1"]["points"],
-                    "player1_games": score["player1"]["games"],
-                    "player1_sets": score["player1"]["sets"],
-                    "player2_points": score["player2"]["points"],
-                    "player2_games": score["player2"]["games"],
-                    "player2_sets": score["player2"]["sets"],
-                    "finished": False,
-                    "current_game_state": match.current_game_state
-                }
+            context = {
+                "uuid": match.uuid,
+                "player1": PlayerService.get_name(db, match.player1_id),
+                "player2": PlayerService.get_name(db, match.player2_id),
+                "player1_points": score["player1"]["points"],
+                "player1_games": score["player1"]["games"],
+                "player1_sets": score["player1"]["sets"],
+                "player2_points": score["player2"]["points"],
+                "player2_games": score["player2"]["games"],
+                "player2_sets": score["player2"]["sets"],
+                "finished": False,
+                "current_game_state": match.current_game_state
+            }
 
-                response_body = self.view.render_match_score(context)
-                headers = [('Content-Type', 'text/html; charset=utf-8')]
-                start_response('200 OK', headers)
-                return [response_body.encode('utf-8')]  # Обязательное кодирование
+            response_body = self.view.render_match_score(context)
+            headers = [('Content-Type', 'text/html; charset=utf-8')]
+            start_response('200 OK', headers)
+            return [response_body.encode('utf-8')]  # Обязательное кодирование
         except PlayerNotFound as e:
             return self._handle_error(start_response, e, status='404 Not Found')
         except Exception as e:
@@ -220,7 +214,8 @@ class MatchController(BaseController):
     def _render_final_score(
             self,
             start_response: Callable[[str, list[tuple[str, str]]], None],
-            match: Match
+            match: Match,
+            db: Session
     ) -> list[bytes]:
         """
         Generates a page with the final result of the match.
@@ -230,18 +225,17 @@ class MatchController(BaseController):
         :return: Response as a list of bytes
         """
         try:
-            with get_db() as db:
-                context = {
-                    "player1": PlayerService.get_name(db, match.player1_id),
-                    "player2": PlayerService.get_name(db, match.player2_id),
-                    "winner": PlayerService.get_name(db, match.winner_id),
-                    "player1_sets": json.loads(match.score)["player1"]["sets"],
-                    "player2_sets": json.loads(match.score)["player2"]["sets"],
-                }
-                response_body = self.view.render_final_score(context)
-                headers = [('Content-Type', 'text/html; charset=utf-8')]
-                start_response('200 OK', headers)
-                return [response_body.encode('utf-8')]
+            context = {
+                "player1": PlayerService.get_name(db, match.player1_id),
+                "player2": PlayerService.get_name(db, match.player2_id),
+                "winner": PlayerService.get_name(db, match.winner_id),
+                "player1_sets": json.loads(match.score)["player1"]["sets"],
+                "player2_sets": json.loads(match.score)["player2"]["sets"],
+            }
+            response_body = self.view.render_final_score(context)
+            headers = [('Content-Type', 'text/html; charset=utf-8')]
+            start_response('200 OK', headers)
+            return [response_body.encode('utf-8')]
 
         except PlayerNotFound as e:
             return self._handle_error(start_response, e, status='404 Not Found')
