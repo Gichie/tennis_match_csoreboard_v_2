@@ -1,8 +1,8 @@
 # Tennis Match Scoreboard
 
 Приложение для отслеживания счета в теннисном матче, разработанное на Python.  
-Проект создан в рамках курса по развитию своих профессиональных навыков.  
-ТЗ проекта: https://zhukovsd.github.io/python-backend-learning-course/
+Проект создан в рамках курса по развитию своих профессиональных навыков https://zhukovsd.github.io/python-backend-learning-course/  
+ТЗ проекта: https://zhukovsd.github.io/python-backend-learning-course/projects/tennis-scoreboard/
 
 ## Описание
 
