@@ -23,6 +23,7 @@ from services import score_utils
 from services.match_service import MatchService
 from services.player_service import PlayerService
 from services.validation import Validation
+from utils.request_utils import parse_form_data
 
 logger = logging.getLogger(__name__)
 
@@ -60,12 +61,10 @@ class MatchController(BaseController):
         :return: Response as a list of bytes
         """
         try:
-            content_length = int(environ.get('CONTENT_LENGTH', 0))
-            post_data_bytes = environ['wsgi.input'].read(content_length).decode('utf-8')
-            params = parse_qs(post_data_bytes)
+            params = parse_form_data(environ)
 
-            player1_name = params.get('player1', [''])[0].strip()
-            player2_name = params.get('player2', [''])[0].strip()
+            player1_name = params.get('player1', '').strip()
+            player2_name = params.get('player2', '').strip()
             validation_errors = Validation.player_names(player1_name, player2_name)
 
             if validation_errors:
@@ -160,9 +159,7 @@ class MatchController(BaseController):
         :return: Response as a list of bytes
         """
         try:
-            content_length = int(environ.get('CONTENT_LENGTH', 0))
-            post_data = environ['wsgi.input'].read(content_length).decode('utf-8')
-            params = parse_qs(post_data)
+            params = parse_form_data(environ)
 
             player_num = MatchService.determine_player_number(params)
             MatchService.add_point(db, match, score, player_num)

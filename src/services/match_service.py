@@ -167,7 +167,7 @@ class MatchService:
             raise DatabaseError("Failed to get completed matches") from e
 
     @staticmethod
-    def determine_player_number(params: dict[Any, list[Any]]) -> int:
+    def determine_player_number(params: dict[str, str]) -> int:
         """
         Returns the player number (1 or 2) based on parameters.
 
