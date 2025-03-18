@@ -178,8 +178,7 @@ class MatchController(BaseController):
             return result
         except Exception as e:
             logger.critical('Unexpected error while updating match score', exc_info=True)
-            result_exc: list[bytes] = self._handle_error(start_response, e, match.uuid)
-            return result_exc
+            return self._handle_error(start_response, e, match.uuid)
 
     def _render_score_page(
             self,
@@ -216,12 +215,10 @@ class MatchController(BaseController):
                 start_response('200 OK', headers)
                 return [response_body.encode('utf-8')]  # Обязательное кодирование
         except PlayerNotFound as e:
-            result: list[bytes] = self._handle_error(start_response, e, status='404 Not Found')
-            return result
+            return self._handle_error(start_response, e, status='404 Not Found')
         except Exception as e:
             logger.critical('Unexpected error while rendering match score', exc_info=True)
-            result_exc: list[bytes] = self._handle_error(start_response, e)
-            return result_exc
+            return self._handle_error(start_response, e)
 
     def _render_final_score(
             self,
@@ -250,9 +247,7 @@ class MatchController(BaseController):
                 return [response_body.encode('utf-8')]
 
         except PlayerNotFound as e:
-            result: list[bytes] = self._handle_error(start_response, e, status='404 Not Found')
-            return result
+            return self._handle_error(start_response, e, status='404 Not Found')
         except Exception as e:
             logger.critical('Unexpected error while rendering final match score', exc_info=True)
-            result_exc: list[bytes] = self._handle_error(start_response, e)
-            return result_exc
+            return self._handle_error(start_response, e)

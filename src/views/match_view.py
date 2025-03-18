@@ -24,13 +24,10 @@ class MatchView(BaseView):
             errors: dict[str, str] | None = None
     ) -> str:
         context = {'player1_name': player1_name, 'player2_name': player2_name, 'errors': errors or {}}
-        result: str = self.render_template(TemplateName.NEW_MATCH_FORM, context)
-        return result
+        return self.render_template(TemplateName.NEW_MATCH_FORM, context)
 
     def render_match_score(self, context: dict[str, str]) -> str:
-        result: str = self.render_template(TemplateName.MATCH_SCORE, context)
-        return result
+        return self.render_template(TemplateName.MATCH_SCORE, context)
 
     def render_final_score(self, context: dict[str, str]) -> str:
-        result: str = self.render_template(TemplateName.FINAL_SCORE, context)
-        return result
+        return self.render_template(TemplateName.FINAL_SCORE, context)

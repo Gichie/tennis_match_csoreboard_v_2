@@ -14,5 +14,4 @@ class CompletedMatchesView(BaseView):
         super().__init__()
 
     def render_completed_matches(self, context: dict[str, int | str | list[dict[str, str]]]) -> str:
-        result: str = self.render_template(TemplateName.COMPLETED_MATCHES, context)
-        return result
+        return self.render_template(TemplateName.COMPLETED_MATCHES, context)

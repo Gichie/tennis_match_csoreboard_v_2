@@ -55,9 +55,8 @@ class Validation:
         :return: The corrected page number if it was out of range, otherwise the original page number.
         """
         last_page = total_matches // per_page + 1
-        min_page: int = MIN_PAGE
-        if page < min_page:
-            return min_page
+        if page < MIN_PAGE:
+            return MIN_PAGE
         elif page > last_page:
             return last_page
         return page

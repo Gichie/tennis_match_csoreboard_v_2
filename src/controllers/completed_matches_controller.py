@@ -57,12 +57,11 @@ class CompletedMatchesController(BaseController):
                 return [response_body.encode("utf-8")]
 
         except DatabaseError as e:
-            result: list[bytes] = self._handle_error(start_response, e)
-            return result
+            return self._handle_error(start_response, e)
+
         except Exception as e:
             logger.critical("Unexpected error while loading completed matches", exc_info=True)
-            result_exc: list[bytes] = self._handle_error(start_response, e)
-            return result_exc
+            return self._handle_error(start_response, e)
 
     def _prepare_matches_data(self, matches: list[Match]) -> list[dict[str, str]]:
         """

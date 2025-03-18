@@ -11,5 +11,4 @@ class HomeView(BaseView):
         super().__init__()
 
     def render_home(self) -> str:
-        result: str = self.render_template(TemplateName.HOME_PAGE)
-        return result
+        return self.render_template(TemplateName.HOME_PAGE)

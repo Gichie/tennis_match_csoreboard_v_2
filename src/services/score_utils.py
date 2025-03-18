@@ -70,8 +70,7 @@ def is_match_finished(score: ScoreDict) -> bool:
     :param score: A dictionary representing the current score of the match.
     :return: True if the match is finished, False otherwise.
     """
-    res: bool = score["player1"]["sets"] == MIN_SETS or score["player2"]["sets"] == MIN_SETS
-    return res
+    return score["player1"]["sets"] == MIN_SETS or score["player2"]["sets"] == MIN_SETS
 
 
 def is_set_finished(score: ScoreDict, player_key: str, opponent_key: str) -> bool:
@@ -83,11 +82,10 @@ def is_set_finished(score: ScoreDict, player_key: str, opponent_key: str) -> boo
     :param opponent_key: The key representing the opponent in the score dictionary (e.g., 'player2').
     :return: True if the set is finished, False otherwise.
     """
-    res: bool = (
+    return (
             score[player_key]["games"] >= MIN_GAMES and
             abs(score[player_key]["games"] - score[opponent_key]["games"]) >= SCORE_DIFF
     )
-    return res
 
 
 def is_tie_break(score: ScoreDict, player_key: str, opponent_key: str) -> bool:
@@ -99,5 +97,4 @@ def is_tie_break(score: ScoreDict, player_key: str, opponent_key: str) -> bool:
     :param opponent_key: The key representing the opponent in the score dictionary (e.g., 'player2').
     :return: True if the set is at tie-break, False otherwise.
     """
-    res: bool = score[player_key]["games"] == MIN_GAMES and score[opponent_key]["games"] == MIN_GAMES
-    return res
+    return score[player_key]["games"] == MIN_GAMES and score[opponent_key]["games"] == MIN_GAMES

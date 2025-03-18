@@ -64,5 +64,5 @@ where = ["src"]
 python_version = "3.10"
 strict = true
 warn_unused_configs = true
-disable_error_code = ["import-untyped"]
+disable_error_code = ["import-untyped", "no-any-return"]
 disallow_subclassing_any = false

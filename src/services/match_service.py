@@ -1,7 +1,7 @@
 import json
 import logging
 import uuid
-from typing import Any, Type
+from typing import Any
 
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
@@ -12,6 +12,7 @@ from exceptions import InvalidGameStateError, NotFoundMatchError, PlayerNumberEr
 from models.match import Match
 from models.player import Player
 from services import score_utils
+from services.score_utils import ScoreDict
 from services.strategies.advantage_state_strategy import AdvantageStateStrategy
 from services.strategies.deuce_state_strategy import DeuceStateStrategy
 from services.strategies.regular_state_strategy import RegularStateStrategy
@@ -61,7 +62,7 @@ class MatchService:
             raise DatabaseError("Failed to create match") from e
 
     @staticmethod
-    def add_point(db: Session, match: Match, score: dict[str, dict[str, int]], player_num: int) -> None:
+    def add_point(db: Session, match: Match, score: ScoreDict, player_num: int) -> None:
         """
         Adds a point to the specified player's score and updates the game state.
 
@@ -124,7 +125,7 @@ class MatchService:
             page: int = MIN_PAGE,
             per_page: int = PER_PAGE,
             player_name: str | None = None
-    ) -> tuple[list[Type[Match]], int, int]:
+    ) -> tuple[list[Match], int, int]:
         """
         Retrieves a list of completed matches, with optional pagination and filtering by player name.
 
