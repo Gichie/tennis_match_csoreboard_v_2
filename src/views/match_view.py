@@ -1,9 +1,17 @@
 import logging
+from enum import Enum
 
 from views.base_view import BaseView
 from views.template_name import TemplateName
 
 logger = logging.getLogger(__name__)
+
+
+class TennisPoint(Enum):
+    LOVE = 0
+    FIFTEEN = 15
+    THIRTY = 30
+    FORTY = 40
 
 
 class MatchView(BaseView):
@@ -14,7 +22,12 @@ class MatchView(BaseView):
 
     def __init__(self) -> None:
         super().__init__()
-        self.env.filters['tennis_points'] = lambda x: {0: '0', 1: '15', 2: '30', 3: '40'}.get(x, '40')
+        self.env.filters['tennis_points'] = lambda x: {
+            0: f'{TennisPoint.LOVE.value}',
+            1: f'{TennisPoint.FIFTEEN.value}',
+            2: f'{TennisPoint.THIRTY.value}',
+            3: f'{TennisPoint.FORTY.value}'
+        }.get(x, f'{TennisPoint.FORTY.value}')
         self.env.filters['tie_break_points'] = lambda x: f'{x}'
 
     def render_new_match_form(
