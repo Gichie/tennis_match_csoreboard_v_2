@@ -35,7 +35,7 @@ class AdvantageStateStrategy(GameStateStrategy):
         :param player_num: The player number (1 or 2).
         """
         if not match.current_game_state.startswith('advantage_'):
-            logger.error("Invalid game state for AdvantageStateStrategy: {match.current_game_state}}")
+            logger.error(f"Invalid game state for AdvantageStateStrategy: {match.current_game_state}")
             raise InvalidGameStateError(f"Expected advantage state but got: {match.current_game_state}")
 
         try:
