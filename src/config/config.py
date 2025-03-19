@@ -28,7 +28,7 @@ DB_PORT: str | None = os.getenv("DB_PORT")
 DATABASE_URI: str = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4"
 
 # Number of matches per page
-PER_PAGE = 10
+PER_PAGE = 5
 
 SCORE_DIFF = 2
 MIN_GAMES = 6
